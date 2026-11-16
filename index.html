@@ -46,6 +46,7 @@ input,select{background:var(--panel2);border:1px solid var(--line);border-radius
 .bar{height:22px;background:var(--panel2);border-radius:6px;position:relative;cursor:pointer;overflow:hidden;border:1px solid var(--line)}
 .bar i{position:absolute;top:0;bottom:0;opacity:.85}.bar b{position:absolute;top:0;bottom:0;width:2px;background:#fff}
 .sw{display:flex;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}.sw button{flex:1;border:0;padding:12px;font-size:16px;font-weight:700;background:var(--panel);color:var(--muted);cursor:pointer}.sw button.on{background:var(--pri);color:#062a23}
+.zl{position:absolute;inset:0;z-index:2;display:none;cursor:grab;touch-action:none}.stage.z .zl{display:block}.stage iframe,.stage video{transform-origin:center center;transition:transform .08s}
 .muted{color:var(--muted);font-size:12px}
 @media(max-width:900px){.wrap{grid-template-columns:1fr;height:auto}.stage{position:sticky;top:0;z-index:3;box-shadow:0 6px 16px #0008}.right{min-height:420px}}
 </style>
@@ -69,6 +70,7 @@ input,select{background:var(--panel2);border:1px solid var(--line);border-radius
       <button class="btn s sm" onclick="skip(2)">2 ›</button>
       <button class="btn s sm" onclick="skip(10)">10 ⏩</button>
       <div class="time" id="tnow">00:00</div>
+      <button class="btn s sm" onclick="zoomBy(-0.5)">🔍−</button><span id="zv" class="muted" style="min-width:34px;text-align:center">1×</span><button class="btn s sm" onclick="zoomBy(0.5)">🔍+</button><button class="btn s sm" onclick="zoomReset()">↺</button>
       <span class="muted">מהירות</span>
       <select id="rate" onchange="setRate(+this.value)"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select>
       <span style="flex:1"></span>
@@ -152,17 +154,39 @@ function loadYT(){
 }
 function makeYT(id){
   $('#stage').innerHTML='<div id="yt"></div>';
-  player.kind='yt';player.v=null;
+  player.kind='yt';player.v=null;Z.z=1;Z.x=Z.y=0;setTimeout(zApply,800);
   player.yt=new YT.Player('yt',{videoId:id,playerVars:{rel:0,modestbranding:1,playsinline:1},events:{onError:e=>{$('#stage').innerHTML=`<div class="empty">יוטיוב לא מאפשר לנגן את הסרטון כאן (קוד ${e.data}).<br>אם פתחת את הקובץ ישירות מהמחשב – נסה דפדפן Chrome, או הורד את הסרטון (אם יש לך זכויות עליו) ובחר "קובץ וידאו מהמחשב".</div>`}}});
 }
 function loadFile(f){
   if(!f)return;$('#stage').innerHTML='<video id="vid" controls playsinline></video>';
-  const v=$('#vid');v.src=URL.createObjectURL(f);player.kind='file';player.v=v;player.yt=null;
+  const v=$('#vid');v.src=URL.createObjectURL(f);player.kind='file';player.v=v;player.yt=null;Z.z=1;Z.x=Z.y=0;zApply();
   P.src={type:'file',name:f.name};if(!P.name){P.name=f.name.replace(/\.[^.]+$/,'');$('#pname').value=P.name}save();toast('הסרטון נטען');
 }
 function togglePlay(){if(!player.kind)return;player.playing()?player.pause():player.play()}
 function skip(s){if(player.kind)player.seek(player.time()+s)}
 function setRate(r){if(player.kind)player.rate(r)}
+
+// ===== Zoom =====
+const Z={z:1,x:0,y:0};
+function zt(){return $('#stage').querySelector('iframe,video')}
+function zApply(){const t=zt(),st=$('#stage');if(!t)return;const w=st.clientWidth,h=st.clientHeight;const mx=(Z.z-1)*w/2,my=(Z.z-1)*h/2;
+  Z.x=Math.max(-mx,Math.min(mx,Z.x));Z.y=Math.max(-my,Math.min(my,Z.y));
+  t.style.transform=`translate(${Z.x}px,${Z.y}px) scale(${Z.z})`;st.classList.toggle('z',Z.z>1);$('#zv').textContent=(Math.round(Z.z*10)/10)+'×';
+  if(!st.querySelector('.zl')){const o=document.createElement('div');o.className='zl';st.appendChild(o);zBind(o)}}
+function zoomBy(d){Z.z=Math.max(1,Math.min(5,Z.z+d));if(Z.z===1){Z.x=Z.y=0}zApply()}
+function zoomReset(){Z.z=1;Z.x=Z.y=0;zApply()}
+function zBind(o){const pts=new Map();let start=null,moved=false;
+  o.addEventListener('pointerdown',e=>{o.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});moved=false;
+    start={z:Z.z,x:Z.x,y:Z.y,pts:new Map(pts)}});
+  o.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});const a=[...pts.values()],b=[...start.pts.values()];
+    if(a.length>=2&&b.length>=2){const d1=Math.hypot(b[0].x-b[1].x,b[0].y-b[1].y),d2=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);Z.z=Math.max(1,Math.min(5,start.z*d2/d1));moved=true}
+    else if(b.length){const dx=a[0].x-b[0].x,dy=a[0].y-b[0].y;if(Math.abs(dx)+Math.abs(dy)>4)moved=true;Z.x=start.x+dx;Z.y=start.y+dy}
+    zApply()});
+  const up=e=>{pts.delete(e.pointerId);if(!pts.size&&!moved)togglePlay();start={z:Z.z,x:Z.x,y:Z.y,pts:new Map(pts)}};
+  o.addEventListener('pointerup',up);o.addEventListener('pointercancel',up);
+  o.addEventListener('wheel',e=>{e.preventDefault();zoomBy(e.deltaY<0?0.25:-0.25)},{passive:false});
+  o.addEventListener('dblclick',zoomReset)}
+$('#stage').addEventListener('wheel',e=>{if(e.ctrlKey){e.preventDefault();zoomBy(e.deltaY<0?0.25:-0.25)}},{passive:false});
 
 // ===== Tags =====
 function drawTags(){
@@ -272,6 +296,7 @@ document.addEventListener('keydown',e=>{
   if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)||$('#mdl'))return;
   const k=e.key.toLowerCase();
   if(k===' '){e.preventDefault();togglePlay();return}
+  if(k==='+'||k==='='){zoomBy(0.5);return}if(k==='-'){zoomBy(-0.5);return}
   if(e.key==='ArrowLeft'){e.preventDefault();skip(-2);return}
   if(e.key==='ArrowRight'){e.preventDefault();skip(2);return}
   if(k==='i'||k==='ן'){inMark=player.time();toast('התחלה: '+fmt(inMark));return}
