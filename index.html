@@ -55,6 +55,7 @@ input,select{background:var(--panel2);border:1px solid var(--line);border-radius
   <input id="url" placeholder="הדבק קישור יוטיוב / שידור" style="flex:1;min-width:220px">
   <button class="btn" onclick="loadYT()">טען</button>
   <label class="btn s" style="cursor:pointer">📁 קובץ וידאו מהמחשב<input type="file" accept="video/*" hidden onchange="loadFile(this.files[0])"></label>
+  <select id="sport" onchange="setSport(this.value)"><option value="handball">🤾 כדוריד</option><option value="football">⚽ כדורגל</option></select>
   <input id="pname" placeholder="שם המשחק" style="width:200px" oninput="P.name=this.value;save()">
   <button class="btn s" onclick="openSettings()">⚙️ הגדרת אירועים</button>
 </header>
@@ -104,17 +105,31 @@ const DEF_TAGS=[
  {name:'משחק פסיבי',color:'#868e96',key:'8',pre:20,post:3,desc:''},
  {name:'החלטה שגויה',color:'#c2255c',key:'9',pre:10,post:5,desc:''},
  {name:'מיקום שופט',color:'#5c7cfa',key:'0',pre:6,post:6,desc:''}];
-const TAGS_VER=2;
+const FOOT_TAGS=[
+ {name:'נבדל',color:'#1c7ed6',key:'1',pre:10,post:4,desc:'עוזר השופט מרים דגל ומחזיק אותו, השופט שורק, העוזר מוריד את הדגל לכיוון המגרש (קרוב/אמצע/רחוק).'},
+ {name:'עבירה',color:'#7048e8',key:'2',pre:8,post:4,desc:'שריקה, השופט מצביע עם יד מושטת לכיוון הקבוצה שמקבלת בעיטה חופשית. בעיטה עקיפה – יד מורמת למעלה.'},
+ {name:'פנדל',color:'#e67700',key:'3',pre:12,post:6,desc:'שריקה, השופט מצביע לנקודת הפנדל.'},
+ {name:'כרטיס צהוב',color:'#f2c200',key:'4',pre:12,post:6,desc:'השופט מרים כרטיס צהוב מעל הראש.'},
+ {name:'כרטיס אדום',color:'#e03131',key:'5',pre:15,post:8,desc:'השופט מרים כרטיס אדום מעל הראש, שחקן יוצא מהמגרש.'},
+ {name:'יתרון',color:'#0ca678',key:'6',pre:6,post:6,desc:'אין שריקה, השופט מושיט את שתי הידיים קדימה – המשחק ממשיך.'},
+ {name:'נגיעת יד',color:'#ae3ec9',key:'7',pre:8,post:4,desc:'שריקה, השופט מצביע לבעיטה חופשית או לפנדל, לעיתים מסמן ביד על הזרוע.'},
+ {name:'שער',color:'#2f9e44',key:'8',pre:12,post:4,desc:'הכדור בשער, השופט מצביע לנקודת האמצע, התוצאה בלוח משתנה.'},
+ {name:'בדיקת VAR',color:'#495057',key:'9',pre:15,post:10,desc:'השופט שם יד על האוזניה ומחכה, או מסמן מלבן (מסך) בידיים והולך למסך בצד המגרש.'},
+ {name:'מיקום שופט',color:'#5c7cfa',key:'0',pre:6,post:6,desc:''}];
+const DEFS={handball:DEF_TAGS,football:FOOT_TAGS};
+const TAGS_VER=3;
 let P;try{P=JSON.parse(localStorage.getItem('reflect_clips')||'null')}catch(e){}
 if(!P)P={name:'',src:null,tags:DEF_TAGS,clips:[]};
-if(P.tagsVer!==TAGS_VER){P.tags=JSON.parse(JSON.stringify(DEF_TAGS));P.tagsVer=TAGS_VER;}
+if(P.tagsVer!==TAGS_VER){P.sets={handball:P.tagsVer===2&&P.tags?P.tags:JSON.parse(JSON.stringify(DEF_TAGS)),football:JSON.parse(JSON.stringify(FOOT_TAGS))};P.sport=P.sport||'handball';P.tagsVer=TAGS_VER;}
+P.tags=P.sets[P.sport];
+function setSport(sp){P.sport=sp;P.tags=P.sets[sp];save();drawTags();drawList();toast(sp==='football'?'⚽ כדורגל':'🤾 כדוריד')}
 function save(){try{localStorage.setItem('reflect_clips',JSON.stringify(P))}catch(e){}}
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=t=>{t=Math.max(0,t||0);const h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=Math.floor(t%60);return (h?h+':'+String(m).padStart(2,'0'):String(m).padStart(2,'0'))+':'+String(s).padStart(2,'0')};
 const parseT=s=>{const p=String(s).trim().split(':').map(Number);if(p.some(isNaN))return null;return p.reduce((a,b)=>a*60+b,0)};
 function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),1600)}
-let cur=null;$('#pname').value=P.name||'';
+let cur=null;$('#pname').value=P.name||'';$('#sport').value=P.sport;
 
 // ===== Player abstraction =====
 const player={kind:null,yt:null,v:null,
@@ -228,7 +243,7 @@ function exportMenu(){
   <textarea style="width:100%;height:150px;background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px" readonly>${esc(linksText())}</textarea>
   <p><button class="btn s" onclick="closeM()">סגירה</button></p>`);
 }
-function importJSON(f){if(!f)return;f.text().then(t=>{try{P=JSON.parse(t);save();$('#pname').value=P.name||'';drawTags();drawList();
+function importJSON(f){if(!f)return;f.text().then(t=>{try{P=JSON.parse(t);if(!P.sets){P.sets={handball:P.tags||JSON.parse(JSON.stringify(DEF_TAGS)),football:JSON.parse(JSON.stringify(FOOT_TAGS))};P.sport='handball';P.tagsVer=TAGS_VER}P.tags=P.sets[P.sport];$('#sport').value=P.sport;save();$('#pname').value=P.name||'';drawTags();drawList();
   if(P.src&&P.src.type==='yt'){$('#url').value='https://youtu.be/'+P.src.id;loadYT()}else if(P.src)toast('בחר שוב את קובץ הווידאו: '+P.src.name);}catch(e){toast('קובץ לא תקין')}})}
 
 // ===== Settings =====
@@ -241,7 +256,7 @@ function openSettings(){
   <td><button class="btn bad sm" onclick="P.tags.splice(${i},1);openSettings()">✕</button></td></tr>
   <tr><td colspan="6" style="padding-bottom:12px"><input placeholder="איך מזהים את האירוע (מה שומעים / רואים / מה קורה בלוח)" value="${esc(t.desc||'')}" onchange="P.tags[${i}].desc=this.value"></td></tr>`).join('')}</table>
   <p><button class="btn s" onclick="P.tags.push({name:'תגית חדשה',color:'#888888',key:'',pre:8,post:3,desc:''});openSettings()">+ תגית</button>
-  <button class="btn s" onclick="P.tags=JSON.parse(JSON.stringify(DEF_TAGS));openSettings()">ברירת מחדל (כדוריד)</button></p>
+  <button class="btn s" onclick="P.tags=P.sets[P.sport]=JSON.parse(JSON.stringify(DEFS[P.sport]));openSettings()">ברירת מחדל (${P.sport==='football'?'כדורגל':'כדוריד'})</button></p>
   <p><button class="btn" onclick="save();drawTags();drawList();closeM();toast('נשמר')">שמירה</button></p>`);
 }
 function modal(h){closeM();const m=document.createElement('div');m.className='modal';m.id='mdl';m.innerHTML=`<div class="box">${h}</div>`;m.onclick=e=>{if(e.target===m)closeM()};document.body.appendChild(m)}
