@@ -56,7 +56,7 @@ input,select{background:var(--panel2);border:1px solid var(--line);border-radius
   <button class="btn" onclick="loadYT()">טען</button>
   <label class="btn s" style="cursor:pointer">📁 קובץ וידאו מהמחשב<input type="file" accept="video/*" hidden onchange="loadFile(this.files[0])"></label>
   <input id="pname" placeholder="שם המשחק" style="width:200px" oninput="P.name=this.value;save()">
-  <button class="btn s" onclick="openSettings()">⚙️ הגדרת תגיות</button>
+  <button class="btn s" onclick="openSettings()">⚙️ הגדרת אירועים</button>
 </header>
 <div class="wrap">
   <div class="left">
@@ -94,18 +94,20 @@ input,select{background:var(--panel2);border:1px solid var(--line);border-radius
 <script>
 // ===== State =====
 const DEF_TAGS=[
- {name:'שער',color:'#2f9e44',key:'1',pre:8,post:3},
- {name:'2 דקות',color:'#e67700',key:'2',pre:10,post:4},
- {name:'כרטיס צהוב',color:'#f2c200',key:'3',pre:10,post:4},
- {name:'כרטיס אדום',color:'#e03131',key:'4',pre:12,post:5},
- {name:'7 מטר',color:'#1c7ed6',key:'5',pre:10,post:4},
- {name:'עבירת תוקף',color:'#7048e8',key:'6',pre:8,post:3},
- {name:'צעדים / כדור',color:'#0ca678',key:'7',pre:6,post:2},
- {name:'משחק פסיבי',color:'#868e96',key:'8',pre:20,post:3},
- {name:'החלטה שגויה',color:'#c2255c',key:'9',pre:10,post:5},
- {name:'מיקום שופט',color:'#5c7cfa',key:'0',pre:6,post:6}];
+ {name:'צעדים',color:'#0ca678',key:'1',pre:8,post:3,desc:'שחקן עשה יותר משלושה צעדים עם הכדור בלי לכדרר. שריקה, המשחק נעצר, השופט מראה סיבוב ידיים.'},
+ {name:'2 דקות',color:'#e67700',key:'2',pre:15,post:5,desc:'שתי שריקות, השופט מרים יד ומראה שתי אצבעות – שחקן מורחק ל-2 דקות.'},
+ {name:'שער',color:'#2f9e44',key:'3',pre:8,post:3,desc:''},
+ {name:'7 מטר',color:'#1c7ed6',key:'4',pre:10,post:4,desc:''},
+ {name:'עבירת תוקף',color:'#7048e8',key:'5',pre:8,post:3,desc:''},
+ {name:'כרטיס צהוב',color:'#f2c200',key:'6',pre:10,post:4,desc:''},
+ {name:'כרטיס אדום',color:'#e03131',key:'7',pre:12,post:5,desc:''},
+ {name:'משחק פסיבי',color:'#868e96',key:'8',pre:20,post:3,desc:''},
+ {name:'החלטה שגויה',color:'#c2255c',key:'9',pre:10,post:5,desc:''},
+ {name:'מיקום שופט',color:'#5c7cfa',key:'0',pre:6,post:6,desc:''}];
+const TAGS_VER=2;
 let P;try{P=JSON.parse(localStorage.getItem('reflect_clips')||'null')}catch(e){}
 if(!P)P={name:'',src:null,tags:DEF_TAGS,clips:[]};
+if(P.tagsVer!==TAGS_VER){P.tags=JSON.parse(JSON.stringify(DEF_TAGS));P.tagsVer=TAGS_VER;}
 function save(){try{localStorage.setItem('reflect_clips',JSON.stringify(P))}catch(e){}}
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -148,7 +150,7 @@ function setRate(r){if(player.kind)player.rate(r)}
 
 // ===== Tags =====
 function drawTags(){
-  $('#tags').innerHTML=P.tags.map((t,i)=>`<button class="tagb" style="background:${t.color}" onclick="addClip(${i})"><kbd>${esc(t.key||'')}</kbd>${esc(t.name)}</button>`).join('');
+  $('#tags').innerHTML=P.tags.map((t,i)=>`<button class="tagb" title="${esc(t.desc||'')}" style="background:${t.color}" onclick="addClip(${i})"><kbd>${esc(t.key||'')}</kbd>${esc(t.name)}</button>`).join('');
   $('#flt').innerHTML='<option value="">כל התגיות</option>'+P.tags.map(t=>`<option>${esc(t.name)}</option>`).join('');
 }
 function addClip(i,start,end){
@@ -231,13 +233,14 @@ function importJSON(f){if(!f)return;f.text().then(t=>{try{P=JSON.parse(t);save()
 
 // ===== Settings =====
 function openSettings(){
-  modal(`<h3 style="margin-top:0">הגדרת תגיות</h3><p class="muted">לכל תגית: כמה שניות לפני ואחרי הלחיצה ייכנסו לקליפ, ואיזה מקש מפעיל אותה.</p>
+  modal(`<h3 style="margin-top:0">הגדרת אירועים</h3><p class="muted">לכל אירוע: איך מזהים אותו, כמה שניות לפני ואחרי ייכנסו לקליפ, ואיזה מקש מפעיל אותו. ההגדרות האלה הן גם הבסיס לחיתוך האוטומטי.</p>
   <table><tr><th>שם</th><th>צבע</th><th>מקש</th><th>שנ׳ לפני</th><th>שנ׳ אחרי</th><th></th></tr>
   ${P.tags.map((t,i)=>`<tr><td><input value="${esc(t.name)}" onchange="P.tags[${i}].name=this.value"></td><td><input type="color" value="${t.color}" style="width:44px;padding:2px" onchange="P.tags[${i}].color=this.value"></td>
   <td><input value="${esc(t.key)}" maxlength="1" style="width:44px" onchange="P.tags[${i}].key=this.value.toLowerCase()"></td>
   <td><input type="number" min="0" value="${t.pre}" style="width:64px" onchange="P.tags[${i}].pre=+this.value"></td><td><input type="number" min="0" value="${t.post}" style="width:64px" onchange="P.tags[${i}].post=+this.value"></td>
-  <td><button class="btn bad sm" onclick="P.tags.splice(${i},1);openSettings()">✕</button></td></tr>`).join('')}</table>
-  <p><button class="btn s" onclick="P.tags.push({name:'תגית חדשה',color:'#888888',key:'',pre:8,post:3});openSettings()">+ תגית</button>
+  <td><button class="btn bad sm" onclick="P.tags.splice(${i},1);openSettings()">✕</button></td></tr>
+  <tr><td colspan="6" style="padding-bottom:12px"><input placeholder="איך מזהים את האירוע (מה שומעים / רואים / מה קורה בלוח)" value="${esc(t.desc||'')}" onchange="P.tags[${i}].desc=this.value"></td></tr>`).join('')}</table>
+  <p><button class="btn s" onclick="P.tags.push({name:'תגית חדשה',color:'#888888',key:'',pre:8,post:3,desc:''});openSettings()">+ תגית</button>
   <button class="btn s" onclick="P.tags=JSON.parse(JSON.stringify(DEF_TAGS));openSettings()">ברירת מחדל (כדוריד)</button></p>
   <p><button class="btn" onclick="save();drawTags();drawList();closeM();toast('נשמר')">שמירה</button></p>`);
 }
