@@ -106,20 +106,18 @@ const DEF_TAGS=[
  {name:'החלטה שגויה',color:'#c2255c',key:'9',pre:10,post:5,desc:''},
  {name:'מיקום שופט',color:'#5c7cfa',key:'0',pre:6,post:6,desc:''}];
 const FOOT_TAGS=[
- {name:'נבדל',color:'#1c7ed6',key:'1',pre:10,post:4,desc:'עוזר השופט מרים דגל ומחזיק אותו, השופט שורק, העוזר מוריד את הדגל לכיוון המגרש (קרוב/אמצע/רחוק).'},
- {name:'עבירה',color:'#7048e8',key:'2',pre:8,post:4,desc:'שריקה, השופט מצביע עם יד מושטת לכיוון הקבוצה שמקבלת בעיטה חופשית. בעיטה עקיפה – יד מורמת למעלה.'},
- {name:'פנדל',color:'#e67700',key:'3',pre:12,post:6,desc:'שריקה, השופט מצביע לנקודת הפנדל.'},
- {name:'כרטיס צהוב',color:'#f2c200',key:'4',pre:12,post:6,desc:'השופט מרים כרטיס צהוב מעל הראש.'},
- {name:'כרטיס אדום',color:'#e03131',key:'5',pre:15,post:8,desc:'השופט מרים כרטיס אדום מעל הראש, שחקן יוצא מהמגרש.'},
- {name:'יתרון',color:'#0ca678',key:'6',pre:6,post:6,desc:'אין שריקה, השופט מושיט את שתי הידיים קדימה – המשחק ממשיך.'},
- {name:'נגיעת יד',color:'#ae3ec9',key:'7',pre:8,post:4,desc:'שריקה, השופט מצביע לבעיטה חופשית או לפנדל, לעיתים מסמן ביד על הזרוע.'},
- {name:'שער',color:'#2f9e44',key:'8',pre:12,post:4,desc:'הכדור בשער, השופט מצביע לנקודת האמצע, התוצאה בלוח משתנה.'},
- {name:'בדיקת VAR',color:'#495057',key:'9',pre:15,post:10,desc:'השופט שם יד על האוזניה ומחכה, או מסמן מלבן (מסך) בידיים והולך למסך בצד המגרש.'},
- {name:'מיקום שופט',color:'#5c7cfa',key:'0',pre:6,post:6,desc:''}];
+ {name:'עבירה',color:'#7048e8',key:'1',pre:8,post:4,desc:'שריקה, השופט מצביע עם יד מושטת לכיוון הקבוצה שמקבלת בעיטה חופשית.'},
+ {name:'לא עבירה',color:'#0ca678',key:'2',pre:8,post:4,desc:'מגע / מאבק בלי שריקה – השופט מסמן להמשיך לשחק (או יתרון: שתי ידיים קדימה).'},
+ {name:'צהוב',color:'#f2c200',key:'3',pre:12,post:6,desc:'השופט מרים כרטיס צהוב מעל הראש.'},
+ {name:'אדום',color:'#e03131',key:'4',pre:15,post:8,desc:'השופט מרים כרטיס אדום מעל הראש, שחקן יוצא מהמגרש.'},
+ {name:'פנדל',color:'#e67700',key:'5',pre:12,post:6,desc:'שריקה, השופט מצביע לנקודת הפנדל.'},
+ {name:'DOGSO',color:'#c2255c',key:'6',pre:15,post:8,desc:'מניעת הזדמנות ברורה להבקיע – עבירה על שחקן בדרך לשער / לבד מול השוער.'},
+ {name:'SPA',color:'#1c7ed6',key:'7',pre:12,post:6,desc:'עצירת התקפה מבטיחה – עבירה שעוצרת התקפה מסוכנת (בדרך כלל צהוב).'}];
 const DEFS={handball:DEF_TAGS,football:FOOT_TAGS};
-const TAGS_VER=3;
+const TAGS_VER=4;
 let P;try{P=JSON.parse(localStorage.getItem('reflect_clips')||'null')}catch(e){}
 if(!P)P={name:'',src:null,tags:DEF_TAGS,clips:[]};
+if(P.tagsVer===3&&P.sets){P.sets.football=JSON.parse(JSON.stringify(FOOT_TAGS));P.tagsVer=TAGS_VER;}
 if(P.tagsVer!==TAGS_VER){P.sets={handball:P.tagsVer===2&&P.tags?P.tags:JSON.parse(JSON.stringify(DEF_TAGS)),football:JSON.parse(JSON.stringify(FOOT_TAGS))};P.sport=P.sport||'handball';P.tagsVer=TAGS_VER;}
 P.tags=P.sets[P.sport];
 function setSport(sp){P.sport=sp;P.tags=P.sets[sp];save();drawTags();drawList();toast(sp==='football'?'⚽ כדורגל':'🤾 כדוריד')}
