@@ -2,310 +2,591 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<title>Reflect Clips – תיוג וחיתוך משחקים</title>
+<meta name="theme-color" content="#0b111c">
+<title>Reflect Clips – ניתוח שופטים</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0f1420;--panel:#171e2e;--panel2:#1f2840;--ink:#e8ecf5;--muted:#8d97ad;--line:#2a3450;--pri:#3ecfb2;--bad:#ef6b6b}
-*{box-sizing:border-box}body{margin:0;font-family:Heebo,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
-button,input,select{font:inherit;color:inherit}
-header{display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
-.logo{font-weight:800;font-size:20px}.logo span{color:var(--pri)}
-input,select{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 10px}
-.btn{background:var(--pri);color:#062a23;border:0;border-radius:8px;padding:7px 14px;font-weight:700;cursor:pointer}
-.btn.s{background:var(--panel2);color:var(--ink);border:1px solid var(--line);font-weight:500}
-.btn.sm{padding:4px 9px;font-size:12px}.btn.bad{background:#3a1e24;color:var(--bad)}
-.wrap{display:grid;grid-template-columns:1fr 380px;gap:14px;padding:14px;height:calc(100vh - 58px)}
+:root{--bg:#0b111c;--p1:#121a29;--p2:#18223a;--p3:#202c49;--ink:#eef2f9;--mu:#8e9ab3;--ln:#26324f;--pri:#3ecfb2;--pri-d:#0a3b33;--ok:#40c057;--bad:#fa5252;--mid:#fab005;--r:14px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Heebo,Arial,sans-serif;font-size:14px}
+button,input,select,textarea{font:inherit;color:inherit}
+input,select,textarea{background:var(--p2);border:1px solid var(--ln);border-radius:9px;padding:7px 10px;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--pri)}
+.btn{background:var(--pri);color:#04261f;border:0;border-radius:9px;padding:8px 14px;font-weight:700;cursor:pointer;white-space:nowrap}
+.btn.s{background:var(--p2);color:var(--ink);border:1px solid var(--ln);font-weight:500}
+.btn.s:hover{border-color:var(--pri)}
+.btn.sm{padding:5px 10px;font-size:12.5px}.btn.ic{padding:6px 9px;min-width:34px}
+.btn.on{background:var(--pri);color:#04261f;border-color:var(--pri)}
+.btn.bad{background:#3b1d22;color:var(--bad);border:0}
+.mu{color:var(--mu);font-size:12px}
+/* header */
+header{display:flex;align-items:center;gap:10px;padding:10px 16px;background:linear-gradient(180deg,#141e31,#0f1727);border-bottom:1px solid var(--ln);flex-wrap:wrap;padding-top:max(10px,env(safe-area-inset-top))}
+.brand{display:flex;align-items:center;gap:8px;font-weight:800;font-size:19px;letter-spacing:.3px}
+.brand svg{width:28px;height:28px}.brand span{color:var(--pri)}
+.gname{font-weight:700;font-size:15px;max-width:40vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sp{flex:1}
+.sw{display:flex;border:1px solid var(--ln);border-radius:10px;overflow:hidden}
+.sw button{border:0;background:var(--p1);color:var(--mu);padding:7px 13px;font-weight:700;cursor:pointer}
+.sw button.on{background:var(--pri);color:#04261f}
+/* source bar */
+.srcbar{display:flex;gap:8px;padding:10px 16px;background:var(--p1);border-bottom:1px solid var(--ln);flex-wrap:wrap}
+.srcbar input{flex:1;min-width:200px}
+/* layout */
+.wrap{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:14px;padding:14px;align-items:start}
 .left{display:flex;flex-direction:column;gap:10px;min-width:0}
-.right{background:var(--panel);border:1px solid var(--line);border-radius:12px;display:flex;flex-direction:column;min-height:0}
-.stage{background:#000;border-radius:12px;aspect-ratio:16/9;width:100%;position:relative;overflow:hidden}
-.stage video,.stage iframe,#yt{width:100%;height:100%;border:0;display:block}
-.empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);text-align:center;padding:20px;line-height:1.8}
-.ctrl{display:flex;gap:6px;align-items:center;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px}
-.time{font-variant-numeric:tabular-nums;font-weight:700;font-size:16px;min-width:90px;text-align:center}
-.tags{display:flex;gap:8px;flex-wrap:wrap}
-.tagb{border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;color:#fff;position:relative;min-width:96px}
-.tagb kbd{position:absolute;top:3px;left:6px;font-size:10px;opacity:.75;font-family:inherit}
+.stage{background:#000;border-radius:var(--r);aspect-ratio:16/9;width:100%;position:relative;overflow:hidden;border:1px solid var(--ln)}
+.stage .media{position:absolute;inset:0;transform-origin:center;transition:transform .08s}
+.stage .media iframe,.stage .media video,.stage .media>div{width:100%;height:100%;border:0;display:block;background:#000}
+.empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--mu);text-align:center;padding:20px;line-height:1.9}
+.empty b{color:var(--ink);font-size:17px;display:block;margin-bottom:4px}
+#dc{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
+.stage.draw #dc{pointer-events:auto;cursor:crosshair;touch-action:none}
+.zl{position:absolute;inset:0;z-index:2;display:none;cursor:grab;touch-action:none}
+.stage.z .zl{display:block}
+.badge{position:absolute;top:10px;right:10px;z-index:4;background:#000b;border-radius:8px;padding:4px 10px;font-weight:700;font-size:13px;display:none}
+.badge.show{display:block}
+.ctrl{display:flex;gap:5px;align-items:center;flex-wrap:wrap;background:var(--p1);border:1px solid var(--ln);border-radius:var(--r);padding:8px}
+.time{font-variant-numeric:tabular-nums;font-weight:800;font-size:17px;min-width:84px;text-align:center}
+.sep{width:1px;height:24px;background:var(--ln);margin:0 3px}
+.drawbar{display:none;gap:5px;align-items:center;flex-wrap:wrap;background:var(--p1);border:1px solid var(--pri);border-radius:var(--r);padding:8px}
+.drawbar.show{display:flex}
+.swatch{width:24px;height:24px;border-radius:50%;border:2px solid transparent;cursor:pointer}
+.swatch.on{border-color:#fff}
+.bar{height:26px;background:var(--p1);border-radius:9px;position:relative;cursor:pointer;overflow:hidden;border:1px solid var(--ln)}
+.bar i{position:absolute;top:3px;bottom:3px;border-radius:3px;opacity:.9}.bar b{position:absolute;top:0;bottom:0;width:2px;background:#fff}
+.tags{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px}
+.tagb{border:0;border-radius:11px;padding:12px 8px;font-weight:800;cursor:pointer;color:#fff;position:relative;text-shadow:0 1px 2px #0006;font-size:14.5px}
+.tagb kbd{position:absolute;top:3px;left:7px;font-size:10px;opacity:.8;font-family:inherit}
 .tagb:active{transform:scale(.96)}
-.rh{padding:10px 12px;border-bottom:1px solid var(--line);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-.list{overflow:auto;flex:1;padding:8px}
-.clip{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:7px;cursor:pointer}
+/* panel */
+.right{background:var(--p1);border:1px solid var(--ln);border-radius:var(--r);display:flex;flex-direction:column;position:sticky;top:10px;max-height:calc(100vh - 20px)}
+.rh{padding:12px;border-bottom:1px solid var(--ln);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.rh h3{margin:0;font-size:16px;flex:1}
+.list{overflow:auto;flex:1;padding:8px;min-height:120px}
+.clip{background:var(--p2);border:1px solid var(--ln);border-radius:12px;padding:9px 10px;margin-bottom:8px}
 .clip.on{border-color:var(--pri);box-shadow:0 0 0 1px var(--pri)}
 .clip .top{display:flex;align-items:center;gap:8px}
+.play{background:var(--pri);color:#04261f;border:0;border-radius:50%;width:34px;height:34px;font-size:14px;cursor:pointer;flex:none;font-weight:800}
 .dot{width:10px;height:10px;border-radius:50%;flex:none}
-.clip .nm{font-weight:700;flex:1}.clip .tm{color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
-.clip input{width:100%;margin-top:6px;padding:5px 8px;font-size:13px}
-.clip .act{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;align-items:center}
-.clip .act input{width:62px;margin:0;padding:3px 5px;font-size:12px}
-.foot{padding:10px;border-top:1px solid var(--line);display:flex;gap:6px;flex-wrap:wrap}
-.modal{position:fixed;inset:0;background:#000a;display:flex;align-items:flex-start;justify-content:center;padding:30px 10px;z-index:9;overflow:auto}
-.box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;width:100%;max-width:720px}
-.box table{width:100%;border-collapse:collapse}.box td,.box th{padding:5px;text-align:right}.box th{color:var(--muted);font-weight:500;font-size:12px}
+.clip .nm{font-weight:800;flex:1;font-size:14.5px}.clip .tm{color:var(--mu);font-size:12px;font-variant-numeric:tabular-nums}
+.vd{display:flex;gap:4px;margin-top:7px;flex-wrap:wrap;align-items:center}
+.vd button{border:1px solid var(--ln);background:var(--p1);border-radius:20px;padding:3px 10px;font-size:12.5px;cursor:pointer;color:var(--mu)}
+.vd button.ok.on{background:#173d24;border-color:var(--ok);color:var(--ok)}
+.vd button.bad.on{background:#3b1d22;border-color:var(--bad);color:var(--bad)}
+.vd button.mid.on{background:#3d3214;border-color:var(--mid);color:var(--mid)}
+.vd select{padding:3px 6px;font-size:12.5px;border-radius:20px}
+.clip textarea{width:100%;margin-top:7px;padding:6px 8px;font-size:13px;resize:vertical;min-height:34px}
+.more{display:none;gap:4px;margin-top:7px;flex-wrap:wrap;align-items:center}
+.clip.open .more{display:flex}
+.more input{width:64px;padding:3px 5px;font-size:12px}
+.foot{padding:10px;border-top:1px solid var(--ln);display:flex;gap:6px;flex-wrap:wrap}
+/* modal */
+.modal{position:fixed;inset:0;background:#000b;display:flex;align-items:flex-start;justify-content:center;padding:28px 10px;z-index:50;overflow:auto}
+.box{background:var(--p1);border:1px solid var(--ln);border-radius:16px;padding:18px;width:100%;max-width:760px}
+.box h3{margin:0 0 10px;font-size:18px}
+.box table{width:100%;border-collapse:collapse}.box td,.box th{padding:5px;text-align:right;vertical-align:middle}.box th{color:var(--mu);font-weight:500;font-size:12px}
 .box td input{width:100%}
-.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--pri);color:#062a23;font-weight:700;padding:9px 18px;border-radius:10px;z-index:20}
-.bar{height:22px;background:var(--panel2);border-radius:6px;position:relative;cursor:pointer;overflow:hidden;border:1px solid var(--line)}
-.bar i{position:absolute;top:0;bottom:0;opacity:.85}.bar b{position:absolute;top:0;bottom:0;width:2px;background:#fff}
-.sw{display:flex;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}.sw button{flex:1;border:0;padding:12px;font-size:16px;font-weight:700;background:var(--panel);color:var(--muted);cursor:pointer}.sw button.on{background:var(--pri);color:#062a23}
-.zl{position:absolute;inset:0;z-index:2;display:none;cursor:grab;touch-action:none}.stage.z .zl{display:block}.stage iframe,.stage video{transform-origin:center center;transition:transform .08s}
-.muted{color:var(--muted);font-size:12px}
-@media(max-width:900px){.wrap{grid-template-columns:1fr;height:auto}.stage{position:sticky;top:0;z-index:3;box-shadow:0 6px 16px #0008}.right{min-height:420px}}
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.fg label{display:block;font-size:12px;color:var(--mu);margin-bottom:3px}.fg input{width:100%}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:10px 0}
+.kpi{background:var(--p2);border:1px solid var(--ln);border-radius:12px;padding:12px}.kpi b{display:block;font-size:24px}.kpi span{color:var(--mu);font-size:12px}
+.meter{height:8px;background:var(--p3);border-radius:4px;overflow:hidden;display:flex}.meter i{display:block;height:100%}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--pri);color:#04261f;font-weight:800;padding:10px 18px;border-radius:11px;z-index:99;box-shadow:0 8px 24px #0008;max-width:90vw;text-align:center}
+.prog{position:fixed;inset:0;background:#000c;z-index:60;display:flex;align-items:center;justify-content:center}
+.prog .box{max-width:420px;text-align:center}
+.pbar{height:10px;background:var(--p3);border-radius:5px;overflow:hidden;margin:12px 0}.pbar i{display:block;height:100%;background:var(--pri);width:0}
+/* read-only viewer */
+body.ro .ed{display:none!important}
+.rohead{display:none}body.ro .rohead{display:block}.left .rohead{max-width:none}
+@media(max-width:960px){
+ .wrap{grid-template-columns:1fr;padding:10px}
+ .right{position:static;max-height:none}
+ .stage{position:sticky;top:0;z-index:20;box-shadow:0 8px 18px #000a}
+ .gname{max-width:60vw}
+}
 </style>
 </head>
 <body>
 <header>
-  <div class="logo">Reflect <span>Clips</span></div>
-  <input id="url" placeholder="הדבק קישור יוטיוב / שידור" style="flex:1;min-width:220px">
-  <button class="btn" onclick="loadYT()">טען</button>
-  <label class="btn s" style="cursor:pointer">📁 קובץ וידאו מהמחשב<input type="file" accept="video/*" hidden onchange="loadFile(this.files[0])"></label>
-  <input id="pname" placeholder="שם המשחק" style="width:200px" oninput="P.name=this.value;save()">
-  <button class="btn s" onclick="openSettings()">⚙️ הגדרת אירועים</button>
+  <div class="brand"><svg viewBox="0 0 32 32"><rect x="2" y="2" width="28" height="28" rx="8" fill="#3ecfb2"/><path d="M10 22V10h6.5a4 4 0 0 1 0 8H13m3.3 0L22 22" stroke="#04261f" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Reflect <span>Clips</span></div>
+  <div class="gname" id="gname"></div>
+  <div class="sp"></div>
+  <div class="sw ed"><button id="sw-handball" onclick="setSport('handball')">🤾 כדוריד</button><button id="sw-football" onclick="setSport('football')">⚽ כדורגל</button></div>
+  <button class="btn s sm ed" onclick="openGame()">📋 פרטי משחק</button>
+  <button class="btn s sm ed" onclick="openSettings()">⚙️ אירועים</button>
+  <button class="btn s sm" onclick="openReport()">📊 דוח</button>
 </header>
+<div class="srcbar ed">
+  <input id="url" placeholder="הדבק קישור יוטיוב של המשחק" inputmode="url">
+  <button class="btn" onclick="loadYT()">טען</button>
+  <label class="btn s" style="cursor:pointer">📁 קובץ וידאו<input type="file" accept="video/*" hidden onchange="loadFile(this.files[0])"></label>
+</div>
 <div class="wrap">
   <div class="left">
-    <div class="stage" id="stage"><div class="empty" id="emptyMsg">הדבק קישור יוטיוב למעלה ולחץ "טען"<br>או בחר קובץ וידאו מהמחשב.<br>אחר כך לחץ על כפתורי התגיות (או על המקשים) תוך כדי צפייה – כל לחיצה יוצרת קליפ.</div></div>
+    <div class="stage" id="stage">
+      <div class="media" id="media"><div class="empty" id="emptyMsg"><b>טען משחק כדי להתחיל</b>הדבק קישור יוטיוב או בחר קובץ וידאו.<br>לחץ על כפתורי האירועים תוך כדי צפייה – כל לחיצה יוצרת קליפ.</div></div>
+      <canvas id="dc"></canvas>
+      <div class="badge" id="badge"></div>
+    </div>
     <div class="ctrl">
-      <button class="btn s sm" onclick="skip(-10)">⏪ 10</button>
-      <button class="btn s sm" onclick="skip(-2)">‹ 2</button>
-      <button class="btn sm" id="pp" onclick="togglePlay()">▶︎ / ❚❚</button>
-      <button class="btn s sm" onclick="skip(2)">2 ›</button>
-      <button class="btn s sm" onclick="skip(10)">10 ⏩</button>
+      <button class="btn s ic" title="10 שניות אחורה" onclick="skip(-10)">⏪</button>
+      <button class="btn s ic" title="פריים אחורה" onclick="frame(-1)">‹|</button>
+      <button class="btn ic" style="min-width:52px" onclick="togglePlay()">▶︎❚❚</button>
+      <button class="btn s ic" title="פריים קדימה" onclick="frame(1)">|›</button>
+      <button class="btn s ic" title="10 שניות קדימה" onclick="skip(10)">⏩</button>
       <div class="time" id="tnow">00:00</div>
-      <button class="btn s sm" onclick="zoomBy(-0.5)">🔍−</button><span id="zv" class="muted" style="min-width:34px;text-align:center">1×</span><button class="btn s sm" onclick="zoomBy(0.5)">🔍+</button><button class="btn s sm" onclick="zoomReset()">↺</button>
-      <span class="muted">מהירות</span>
-      <select id="rate" onchange="setRate(+this.value)"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select>
-      <span style="flex:1"></span>
-      <span class="muted">מקשים: רווח = עצור/נגן · ←/→ = 2 שנ׳ · I / O = קליפ ידני (התחלה/סוף)</span>
+      <select id="rate" onchange="setRate(+this.value)" title="מהירות"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select>
+      <span class="sep"></span>
+      <button class="btn s ic" onclick="zoomBy(-0.5)" title="הקטן">−</button><span id="zv" class="mu" style="min-width:30px;text-align:center">1×</span><button class="btn s ic" onclick="zoomBy(0.5)" title="הגדל">+</button><button class="btn s ic" onclick="zoomReset()" title="גודל רגיל">↺</button>
+      <span class="sep ed"></span>
+      <button class="btn s ed" id="drawBtn" onclick="toggleDraw()">✏️ ציור</button>
+    </div>
+    <div class="drawbar ed" id="drawbar">
+      <b style="margin-left:4px">ציור:</b>
+      <button class="btn s sm tool on" data-t="arrow" onclick="setTool('arrow')">➜ חץ</button>
+      <button class="btn s sm tool" data-t="circle" onclick="setTool('circle')">◯ עיגול</button>
+      <button class="btn s sm tool" data-t="line" onclick="setTool('line')">／ קו</button>
+      <button class="btn s sm tool" data-t="free" onclick="setTool('free')">〰 חופשי</button>
+      <span class="sep"></span>
+      <span class="swatch on" style="background:#ffd43b" onclick="setColor('#ffd43b',this)"></span>
+      <span class="swatch" style="background:#ff6b6b" onclick="setColor('#ff6b6b',this)"></span>
+      <span class="swatch" style="background:#3ecfb2" onclick="setColor('#3ecfb2',this)"></span>
+      <span class="swatch" style="background:#ffffff" onclick="setColor('#ffffff',this)"></span>
+      <span class="sep"></span>
+      <button class="btn s sm" onclick="undoDraw()">↶ בטל</button>
+      <button class="btn bad sm" onclick="clearDraw()">🗑 נקה</button>
+      <span class="mu">הציור נשמר כ"תמונה קפואה" בקליפ הנבחר – בהפעלה הקליפ יעצור 3 שניות ויציג אותו.</span>
     </div>
     <div class="bar" id="tl" onclick="tlClick(event)"></div>
-    <div class="sw" style="order:-1"><button id="sw-handball" onclick="setSport('handball')">🤾 כדוריד</button><button id="sw-football" onclick="setSport('football')">⚽ כדורגל</button></div>
-    <div class="tags" id="tags"></div>
+    <div class="tags ed" id="tags"></div>
+    <div class="rohead box" id="rohead"></div>
   </div>
   <div class="right">
     <div class="rh">
-      <b style="flex:1">קליפים (<span id="cnt">0</span>)</b>
+      <h3>קליפים (<span id="cnt">0</span>)</h3>
       <select id="flt" onchange="drawList()"></select>
+      <select id="fv" onchange="drawList()"><option value="">כל ההחלטות</option><option value="ok">✔ נכון</option><option value="bad">✖ שגוי</option><option value="mid">? גבולי</option><option value="none">ללא ציון</option></select>
+      <select id="fw" onchange="drawList()"></select>
     </div>
     <div class="list" id="list"></div>
     <div class="foot">
-      <button class="btn" onclick="playReel()">▶︎ נגן תקציר</button>
-      <button class="btn s" onclick="stopReel()">■ עצור</button>
-      <button class="btn" onclick="copyLinks()">📋 העתק קישורים</button>
-      <button class="btn s" onclick="exportMenu()">⬇︎ ייצוא</button>
-      <label class="btn s" style="cursor:pointer">⬆︎ פתיחת פרויקט<input type="file" accept=".json" hidden onchange="importJSON(this.files[0])"></label>
-      <button class="btn s bad" onclick="if(window.confirm('למחוק את כל הקליפים?')){P.clips=[];save();drawList()}">ניקוי</button>
+      <button class="btn" onclick="playReel()">▶︎ תקציר</button>
+      <button class="btn s" onclick="stopReel()">■</button>
+      <button class="btn s" onclick="copyLinks()">📋 קישורים</button>
+      <button class="btn s ed" onclick="openShare()">🔗 שיתוף</button>
+      <button class="btn s ed" onclick="exportMenu()">🎬 ייצוא</button>
+      <label class="btn s ed" style="cursor:pointer">📂 פתח<input type="file" accept=".json" hidden onchange="importJSON(this.files[0])"></label>
     </div>
   </div>
 </div>
 <script>
-// ===== State =====
-const DEF_TAGS=[
+// ================= Defaults =================
+const DEF_HB=[
  {name:'צעדים',color:'#0ca678',key:'1',pre:8,post:3,desc:'שחקן עשה יותר משלושה צעדים עם הכדור בלי לכדרר. שריקה, המשחק נעצר, השופט מראה סיבוב ידיים.'},
  {name:'2 דקות',color:'#e67700',key:'2',pre:15,post:5,desc:'שתי שריקות, השופט מרים יד ומראה שתי אצבעות – שחקן מורחק ל-2 דקות.'},
  {name:'שער',color:'#2f9e44',key:'3',pre:8,post:3,desc:''},
  {name:'7 מטר',color:'#1c7ed6',key:'4',pre:10,post:4,desc:''},
  {name:'עבירת תוקף',color:'#7048e8',key:'5',pre:8,post:3,desc:''},
- {name:'כרטיס צהוב',color:'#f2c200',key:'6',pre:10,post:4,desc:''},
+ {name:'כרטיס צהוב',color:'#d9a400',key:'6',pre:10,post:4,desc:''},
  {name:'כרטיס אדום',color:'#e03131',key:'7',pre:12,post:5,desc:''},
  {name:'משחק פסיבי',color:'#868e96',key:'8',pre:20,post:3,desc:''},
  {name:'החלטה שגויה',color:'#c2255c',key:'9',pre:10,post:5,desc:''},
  {name:'מיקום שופט',color:'#5c7cfa',key:'0',pre:6,post:6,desc:''}];
-const FOOT_TAGS=[
+const DEF_FB=[
  {name:'עבירה',color:'#7048e8',key:'1',pre:8,post:4,desc:'שריקה, השופט מצביע עם יד מושטת לכיוון הקבוצה שמקבלת בעיטה חופשית.'},
  {name:'לא עבירה',color:'#0ca678',key:'2',pre:8,post:4,desc:'מגע / מאבק בלי שריקה – השופט מסמן להמשיך לשחק (או יתרון: שתי ידיים קדימה).'},
- {name:'צהוב',color:'#f2c200',key:'3',pre:12,post:6,desc:'השופט מרים כרטיס צהוב מעל הראש.'},
+ {name:'צהוב',color:'#d9a400',key:'3',pre:12,post:6,desc:'השופט מרים כרטיס צהוב מעל הראש.'},
  {name:'אדום',color:'#e03131',key:'4',pre:15,post:8,desc:'השופט מרים כרטיס אדום מעל הראש, שחקן יוצא מהמגרש.'},
  {name:'פנדל',color:'#e67700',key:'5',pre:12,post:6,desc:'שריקה, השופט מצביע לנקודת הפנדל.'},
  {name:'DOGSO',color:'#c2255c',key:'6',pre:15,post:8,desc:'מניעת הזדמנות ברורה להבקיע – עבירה על שחקן בדרך לשער / לבד מול השוער.'},
  {name:'SPA',color:'#1c7ed6',key:'7',pre:12,post:6,desc:'עצירת התקפה מבטיחה – עבירה שעוצרת התקפה מסוכנת (בדרך כלל צהוב).'}];
-const DEFS={handball:DEF_TAGS,football:FOOT_TAGS};
-const TAGS_VER=4;
-let P;try{P=JSON.parse(localStorage.getItem('reflect_clips')||'null')}catch(e){}
-if(!P)P={name:'',src:null,tags:DEF_TAGS,clips:[]};
-if(P.tagsVer===3&&P.sets){P.sets.football=JSON.parse(JSON.stringify(FOOT_TAGS));P.tagsVer=TAGS_VER;}
-if(P.tagsVer!==TAGS_VER){P.sets={handball:P.tagsVer===2&&P.tags?P.tags:JSON.parse(JSON.stringify(DEF_TAGS)),football:JSON.parse(JSON.stringify(FOOT_TAGS))};P.sport=P.sport||'handball';P.tagsVer=TAGS_VER;}
-P.tags=P.sets[P.sport];
-function markSport(){['handball','football'].forEach(k=>{const b=document.getElementById('sw-'+k);if(b)b.className=P.sport===k?'on':''})}
-function setSport(sp){P.sport=sp;markSport();P.tags=P.sets[sp];save();drawTags();drawList();toast(sp==='football'?'⚽ כדורגל':'🤾 כדוריד')}
-function save(){try{localStorage.setItem('reflect_clips',JSON.stringify(P))}catch(e){}}
+const DEFS={handball:DEF_HB,football:DEF_FB};
+const CREW={handball:['שופט 1','שופט 2','שניהם'],football:['שופט','עוזר 1','עוזר 2','שופט רביעי','VAR']};
+const VD={ok:'✔ נכון',bad:'✖ שגוי',mid:'? גבולי'};
+const VER=5;
+const clone=o=>JSON.parse(JSON.stringify(o));
+
+// ================= State =================
+let RO=false,P=null;
+function blank(){return {v:VER,name:'',date:'',comp:'',sport:'handball',src:null,crew:{},sets:{handball:clone(DEF_HB),football:clone(DEF_FB)},clips:[]}}
+function migrate(x){
+  if(!x)return blank();
+  if(!x.sets){x.sets={handball:x.tags||clone(DEF_HB),football:clone(DEF_FB)}}
+  if(x.tagsVer===3)x.sets.football=clone(DEF_FB);
+  if(!x.sets.football)x.sets.football=clone(DEF_FB);
+  x.sport=x.sport||'handball';x.crew=x.crew||{};x.clips=(x.clips||[]).map(c=>Object.assign({verdict:'',who:'',note:'',ann:null},c));
+  delete x.tags;delete x.tagsVer;x.v=VER;return x;
+}
+try{P=migrate(JSON.parse(localStorage.getItem('reflect_clips')||'null'))}catch(e){P=blank()}
+const tags=()=>P.sets[P.sport];
+function save(){if(RO)return;try{localStorage.setItem('reflect_clips',JSON.stringify(P))}catch(e){}}
+
+// ================= Utils =================
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=t=>{t=Math.max(0,t||0);const h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=Math.floor(t%60);return (h?h+':'+String(m).padStart(2,'0'):String(m).padStart(2,'0'))+':'+String(s).padStart(2,'0')};
-const parseT=s=>{const p=String(s).trim().split(':').map(Number);if(p.some(isNaN))return null;return p.reduce((a,b)=>a*60+b,0)};
-function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),1600)}
-let cur=null;$('#pname').value=P.name||'';markSport();
+const parseT=s=>{const p=String(s).trim().split(':').map(Number);if(!p.length||p.some(isNaN))return null;return p.reduce((a,b)=>a*60+b,0)};
+const uid=()=>Math.random().toString(36).slice(2,8);
+function toast(m,ms){document.querySelectorAll('.toast').forEach(t=>t.remove());const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),ms||1800)}
+function modal(h){closeM();const m=document.createElement('div');m.className='modal';m.id='mdl';m.innerHTML=`<div class="box">${h}</div>`;m.onclick=e=>{if(e.target===m)closeM()};document.body.appendChild(m)}
+function closeM(){const m=$('#mdl');if(m)m.remove()}
+const clip=id=>P.clips.find(c=>c.id===id);
+const sorted=()=>P.clips.slice().sort((a,b)=>a.start-b.start);
+function copyText(t,okMsg){(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast(okMsg||'הועתק')).catch(()=>modal(`<h3>העתקה</h3><p class="mu">סמן הכל והעתק:</p><textarea style="width:100%;height:240px" readonly onclick="this.select()">${esc(t)}</textarea><p><button class="btn s" onclick="closeM()">סגירה</button></p>`))}
+function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000)}
+const safe=s=>String(s).replace(/[\\/:*?"<>|]/g,'-');
 
-// ===== Player abstraction =====
+// ================= Player =================
 const player={kind:null,yt:null,v:null,
- time(){return this.kind==='yt'&&this.yt&&this.yt.getCurrentTime?this.yt.getCurrentTime():this.v?this.v.currentTime:0},
- dur(){return this.kind==='yt'&&this.yt&&this.yt.getDuration?this.yt.getDuration():this.v?this.v.duration||0:0},
- seek(t){if(this.kind==='yt')this.yt.seekTo(Math.max(0,t),true);else if(this.v)this.v.currentTime=Math.max(0,t)},
- play(){this.kind==='yt'?this.yt.playVideo():this.v&&this.v.play()},
- pause(){this.kind==='yt'?this.yt.pauseVideo():this.v&&this.v.pause()},
- playing(){return this.kind==='yt'?this.yt.getPlayerState&&this.yt.getPlayerState()===1:this.v&&!this.v.paused},
- rate(r){this.kind==='yt'?this.yt.setPlaybackRate(r):this.v&&(this.v.playbackRate=r)}};
-function ytId(u){const m=String(u).match(/(?:youtu\.be\/|v=|\/embed\/|\/live\/|\/shorts\/)([\w-]{11})/);return m?m[1]:(/^[\w-]{11}$/.test(u.trim())?u.trim():null)}
-let ytReady=false,ytQueue=null;
-window.onYouTubeIframeAPIReady=()=>{ytReady=true;if(ytQueue){const q=ytQueue;ytQueue=null;makeYT(q)}};
-function loadYT(){
-  const id=ytId($('#url').value);if(!id)return toast('קישור יוטיוב לא תקין');
-  P.src={type:'yt',id};save();
+ time(){try{return this.kind==='yt'?this.yt.getCurrentTime():this.v?this.v.currentTime:0}catch(e){return 0}},
+ dur(){try{return this.kind==='yt'?this.yt.getDuration():this.v?this.v.duration||0:0}catch(e){return 0}},
+ seek(t){t=Math.max(0,t);if(this.kind==='yt')this.yt.seekTo(t,true);else if(this.v)this.v.currentTime=t},
+ play(){try{this.kind==='yt'?this.yt.playVideo():this.v&&this.v.play()}catch(e){}},
+ pause(){try{this.kind==='yt'?this.yt.pauseVideo():this.v&&this.v.pause()}catch(e){}},
+ playing(){try{return this.kind==='yt'?this.yt.getPlayerState()===1:!!this.v&&!this.v.paused}catch(e){return false}},
+ rate(r){try{this.kind==='yt'?this.yt.setPlaybackRate(r):this.v&&(this.v.playbackRate=r)}catch(e){}}};
+function ytId(u){u=String(u||'').trim();const m=u.match(/(?:youtu\.be\/|v=|\/embed\/|\/live\/|\/shorts\/)([\w-]{11})/);return m?m[1]:(/^[\w-]{11}$/.test(u)?u:null)}
+let ytReady=false,ytQ=null;
+window.onYouTubeIframeAPIReady=()=>{ytReady=true;if(ytQ){const q=ytQ;ytQ=null;makeYT(q)}};
+function loadYT(id){
+  id=id||ytId($('#url').value);if(!id)return toast('קישור יוטיוב לא תקין');
+  if(!RO){P.src={type:'yt',id};save()}
   if(!document.getElementById('ytapi')){const s=document.createElement('script');s.id='ytapi';s.src='https://www.youtube.com/iframe_api';document.head.appendChild(s)}
-  ytReady?makeYT(id):ytQueue=id;
+  ytReady?makeYT(id):ytQ=id;
 }
 function makeYT(id){
-  $('#stage').innerHTML='<div id="yt"></div>';
-  player.kind='yt';player.v=null;Z.z=1;Z.x=Z.y=0;setTimeout(zApply,800);
-  player.yt=new YT.Player('yt',{videoId:id,playerVars:{rel:0,modestbranding:1,playsinline:1},events:{onError:e=>{$('#stage').innerHTML=`<div class="empty">יוטיוב לא מאפשר לנגן את הסרטון כאן (קוד ${e.data}).<br>אם פתחת את הקובץ ישירות מהמחשב – נסה דפדפן Chrome, או הורד את הסרטון (אם יש לך זכויות עליו) ובחר "קובץ וידאו מהמחשב".</div>`}}});
+  $('#media').innerHTML='<div id="yt"></div>';player.kind='yt';player.v=null;zoomReset();
+  player.yt=new YT.Player('yt',{videoId:id,playerVars:{rel:0,modestbranding:1,playsinline:1},events:{
+    onReady:()=>{drawTL()},
+    onError:e=>{$('#media').innerHTML=`<div class="empty"><b>יוטיוב לא מאפשר לנגן את הסרטון כאן (קוד ${e.data})</b>ייתכן שבעל הסרטון חסם הטמעה. אפשר להוריד את הסרטון (אם יש לך זכויות עליו) ולבחור "קובץ וידאו".</div>`}}});
 }
 function loadFile(f){
-  if(!f)return;$('#stage').innerHTML='<video id="vid" controls playsinline></video>';
-  const v=$('#vid');v.src=URL.createObjectURL(f);player.kind='file';player.v=v;player.yt=null;Z.z=1;Z.x=Z.y=0;zApply();
-  P.src={type:'file',name:f.name};if(!P.name){P.name=f.name.replace(/\.[^.]+$/,'');$('#pname').value=P.name}save();toast('הסרטון נטען');
+  if(!f)return;$('#media').innerHTML='<video id="vid" playsinline preload="auto"></video>';
+  const v=$('#vid');v.src=URL.createObjectURL(f);player.kind='file';player.v=v;player.yt=null;zoomReset();
+  v.addEventListener('loadedmetadata',drawTL);v.addEventListener('click',togglePlay);
+  P.src={type:'file',name:f.name};if(!P.name){P.name=f.name.replace(/\.[^.]+$/,'');}save();drawHead();toast('הסרטון נטען');
 }
-function togglePlay(){if(!player.kind)return;player.playing()?player.pause():player.play()}
+function togglePlay(){if(!player.kind)return;if(freeze){endFreeze(true);return}player.playing()?player.pause():player.play()}
 function skip(s){if(player.kind)player.seek(player.time()+s)}
-function setRate(r){if(player.kind)player.rate(r)}
+function frame(n){if(!player.kind)return;player.pause();player.seek(player.time()+n*0.04)}
+function setRate(r){player.rate(r)}
 
-// ===== Zoom =====
+// ================= Zoom =================
 const Z={z:1,x:0,y:0};
-function zt(){return $('#stage').querySelector('iframe,video')}
-function zApply(){const t=zt(),st=$('#stage');if(!t)return;const w=st.clientWidth,h=st.clientHeight;const mx=(Z.z-1)*w/2,my=(Z.z-1)*h/2;
+function zApply(){const m=$('#media'),st=$('#stage');const w=st.clientWidth,h=st.clientHeight;const mx=(Z.z-1)*w/2,my=(Z.z-1)*h/2;
   Z.x=Math.max(-mx,Math.min(mx,Z.x));Z.y=Math.max(-my,Math.min(my,Z.y));
-  t.style.transform=`translate(${Z.x}px,${Z.y}px) scale(${Z.z})`;st.classList.toggle('z',Z.z>1);$('#zv').textContent=(Math.round(Z.z*10)/10)+'×';
-  if(!st.querySelector('.zl')){const o=document.createElement('div');o.className='zl';st.appendChild(o);zBind(o)}}
-function zoomBy(d){Z.z=Math.max(1,Math.min(5,Z.z+d));if(Z.z===1){Z.x=Z.y=0}zApply()}
+  m.style.transform=`translate(${Z.x}px,${Z.y}px) scale(${Z.z})`;st.classList.toggle('z',Z.z>1);$('#zv').textContent=(Math.round(Z.z*10)/10)+'×'}
+function zoomBy(d){Z.z=Math.max(1,Math.min(5,Z.z+d));if(Z.z===1)Z.x=Z.y=0;zApply()}
 function zoomReset(){Z.z=1;Z.x=Z.y=0;zApply()}
-function zBind(o){const pts=new Map();let start=null,moved=false;
-  o.addEventListener('pointerdown',e=>{o.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});moved=false;
-    start={z:Z.z,x:Z.x,y:Z.y,pts:new Map(pts)}});
+(function(){const st=$('#stage');const o=document.createElement('div');o.className='zl';st.appendChild(o);
+  const pts=new Map();let start=null,moved=false;
+  o.addEventListener('pointerdown',e=>{o.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});moved=false;start={z:Z.z,x:Z.x,y:Z.y,pts:new Map(pts)}});
   o.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});const a=[...pts.values()],b=[...start.pts.values()];
-    if(a.length>=2&&b.length>=2){const d1=Math.hypot(b[0].x-b[1].x,b[0].y-b[1].y),d2=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);Z.z=Math.max(1,Math.min(5,start.z*d2/d1));moved=true}
-    else if(b.length){const dx=a[0].x-b[0].x,dy=a[0].y-b[0].y;if(Math.abs(dx)+Math.abs(dy)>4)moved=true;Z.x=start.x+dx;Z.y=start.y+dy}
-    zApply()});
+    if(a.length>=2&&b.length>=2){const d1=Math.hypot(b[0].x-b[1].x,b[0].y-b[1].y)||1,d2=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);Z.z=Math.max(1,Math.min(5,start.z*d2/d1));moved=true}
+    else if(b.length){const dx=a[0].x-b[0].x,dy=a[0].y-b[0].y;if(Math.abs(dx)+Math.abs(dy)>4)moved=true;Z.x=start.x+dx;Z.y=start.y+dy}zApply()});
   const up=e=>{pts.delete(e.pointerId);if(!pts.size&&!moved)togglePlay();start={z:Z.z,x:Z.x,y:Z.y,pts:new Map(pts)}};
-  o.addEventListener('pointerup',up);o.addEventListener('pointercancel',up);
-  o.addEventListener('wheel',e=>{e.preventDefault();zoomBy(e.deltaY<0?0.25:-0.25)},{passive:false});
-  o.addEventListener('dblclick',zoomReset)}
-$('#stage').addEventListener('wheel',e=>{if(e.ctrlKey){e.preventDefault();zoomBy(e.deltaY<0?0.25:-0.25)}},{passive:false});
+  o.addEventListener('pointerup',up);o.addEventListener('pointercancel',up);o.addEventListener('dblclick',zoomReset);
+  st.addEventListener('wheel',e=>{if(Z.z>1||e.ctrlKey){e.preventDefault();zoomBy(e.deltaY<0?0.25:-0.25)}},{passive:false});
+})();
 
-// ===== Tags =====
-function drawTags(){
-  $('#tags').innerHTML=P.tags.map((t,i)=>`<button class="tagb" title="${esc(t.desc||'')}" style="background:${t.color}" onclick="addClip(${i})"><kbd>${esc(t.key||'')}</kbd>${esc(t.name)}</button>`).join('');
-  $('#flt').innerHTML='<option value="">כל התגיות</option>'+P.tags.map(t=>`<option>${esc(t.name)}</option>`).join('');
+// ================= Drawing (telestration) =================
+const dc=$('#dc'),dctx=dc.getContext('2d');
+let drawOn=false,tool='arrow',dcol='#ffd43b',cur=null,live=null,freeze=null,shownAnn=null;
+function sizeCanvas(){const r=dc.getBoundingClientRect(),d=devicePixelRatio||1;if(dc.width!==Math.round(r.width*d)){dc.width=Math.round(r.width*d);dc.height=Math.round(r.height*d)}}
+function drawShapes(ctx,shapes,W,H){
+  ctx.lineCap='round';ctx.lineJoin='round';
+  for(const s of shapes){ctx.strokeStyle=s.c;ctx.fillStyle=s.c;ctx.lineWidth=Math.max(3,W*0.006);ctx.shadowColor='#000a';ctx.shadowBlur=W*0.006;
+    const P0={x:s.p[0].x*W,y:s.p[0].y*H},P1={x:s.p[s.p.length-1].x*W,y:s.p[s.p.length-1].y*H};
+    ctx.beginPath();
+    if(s.t==='circle'){ctx.ellipse((P0.x+P1.x)/2,(P0.y+P1.y)/2,Math.abs(P1.x-P0.x)/2,Math.abs(P1.y-P0.y)/2,0,0,Math.PI*2);ctx.stroke()}
+    else if(s.t==='free'){s.p.forEach((q,i)=>i?ctx.lineTo(q.x*W,q.y*H):ctx.moveTo(q.x*W,q.y*H));ctx.stroke()}
+    else{ctx.moveTo(P0.x,P0.y);ctx.lineTo(P1.x,P1.y);ctx.stroke();
+      if(s.t==='arrow'){const a=Math.atan2(P1.y-P0.y,P1.x-P0.x),L=Math.max(16,W*0.025);ctx.beginPath();ctx.moveTo(P1.x,P1.y);ctx.lineTo(P1.x-L*Math.cos(a-0.45),P1.y-L*Math.sin(a-0.45));ctx.lineTo(P1.x-L*Math.cos(a+0.45),P1.y-L*Math.sin(a+0.45));ctx.closePath();ctx.fill()}}
+    ctx.shadowBlur=0}
 }
+function renderOverlay(){sizeCanvas();dctx.clearRect(0,0,dc.width,dc.height);
+  let shapes=null;
+  if(drawOn&&cur&&clip(cur)&&clip(cur).ann)shapes=clip(cur).ann.shapes;
+  else if(shownAnn)shapes=shownAnn.shapes;
+  if(shapes)drawShapes(dctx,live?shapes.concat([live]):shapes,dc.width,dc.height);else if(live)drawShapes(dctx,[live],dc.width,dc.height)}
+function toggleDraw(){
+  if(!drawOn){if(!player.kind)return toast('טען קודם סרטון');
+    const t=player.time();let c=cur&&clip(cur);if(!c||t<c.start-1||t>c.end+1)c=P.clips.find(x=>t>=x.start&&t<=x.end);
+    if(!c)return toast('עצור את הסרטון בתוך קליפ (או צור קליפ) ואז לחץ ציור',2800);
+    cur=c.id;player.pause();zoomReset();drawOn=true;if(!c.ann||Math.abs(c.ann.t-t)>0.3)c.ann={t,shapes:c.ann&&Math.abs(c.ann.t-t)<=0.3?c.ann.shapes:[]};
+    $('#stage').classList.add('draw');$('#drawbar').classList.add('show');$('#drawBtn').classList.add('on');$('#drawBtn').textContent='✔ סיום ציור';drawList();
+  }else{drawOn=false;$('#stage').classList.remove('draw');$('#drawbar').classList.remove('show');$('#drawBtn').classList.remove('on');$('#drawBtn').textContent='✏️ ציור';
+    const c=clip(cur);if(c&&c.ann&&!c.ann.shapes.length)c.ann=null;save();drawList();toast(c&&c.ann?'הציור נשמר בקליפ':'אין ציור')}
+  renderOverlay();
+}
+function setTool(t){tool=t;document.querySelectorAll('.tool').forEach(b=>b.classList.toggle('on',b.dataset.t===t))}
+function setColor(c,el){dcol=c;document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('on'));el.classList.add('on')}
+function undoDraw(){const c=clip(cur);if(c&&c.ann){c.ann.shapes.pop();save();renderOverlay()}}
+function clearDraw(){const c=clip(cur);if(c&&c.ann){c.ann.shapes=[];save();renderOverlay()}}
+dc.addEventListener('pointerdown',e=>{if(!drawOn)return;dc.setPointerCapture(e.pointerId);const r=dc.getBoundingClientRect();live={t:tool,c:dcol,p:[{x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height}]};renderOverlay()});
+dc.addEventListener('pointermove',e=>{if(!live)return;const r=dc.getBoundingClientRect();const q={x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height};if(live.t==='free')live.p.push(q);else live.p[1]=q;renderOverlay()});
+dc.addEventListener('pointerup',()=>{if(!live)return;const c=clip(cur);if(live.p.length>1&&c&&c.ann){c.ann.shapes.push(live);save()}live=null;renderOverlay();drawList()});
+addEventListener('resize',()=>{renderOverlay();zApply()});
+
+// ================= Tags & clips =================
+function drawTags(){
+  $('#tags').innerHTML=tags().map((t,i)=>`<button class="tagb" title="${esc(t.desc||'')}" style="background:${t.color}" onclick="addClip(${i})"><kbd>${esc(t.key||'')}</kbd>${esc(t.name)}</button>`).join('');
+  const names=[...new Set(tags().map(t=>t.name).concat(P.clips.map(c=>c.tag)))];
+  $('#flt').innerHTML='<option value="">כל האירועים</option>'+names.map(n=>`<option>${esc(n)}</option>`).join('');
+  $('#fw').innerHTML='<option value="">כל הצוות</option>'+CREW[P.sport].map(r=>`<option value="${esc(r)}">${esc(crewName(r))}</option>`).join('');
+}
+function crewName(r){const n=P.crew&&P.crew[r];return n?`${r} – ${n}`:r}
 function addClip(i,start,end){
   if(!player.kind)return toast('קודם טען סרטון');
-  const t=P.tags[i]||{name:'קליפ ידני',color:'#adb5bd',pre:0,post:0};const now=player.time();
-  const c={id:Math.random().toString(36).slice(2,8),tag:t.name,color:t.color,mark:now,start:start??Math.max(0,now-t.pre),end:end??now+t.post,note:''};
-  P.clips.push(c);P.clips.sort((a,b)=>a.start-b.start);save();cur=c.id;drawList();toast('✓ '+t.name+' · '+fmt(now));
+  const t=tags()[i]||{name:'קליפ ידני',color:'#adb5bd',pre:0,post:0};const now=player.time();
+  const c={id:uid(),tag:t.name,color:t.color,mark:now,start:start??Math.max(0,now-t.pre),end:end??now+t.post,note:'',verdict:'',who:'',ann:null};
+  P.clips.push(c);save();cur=c.id;drawTags();drawList();toast('✓ '+t.name+' · '+fmt(now));
 }
-let inMark=null;
-
-// ===== Clip list =====
+function filtered(){const f=$('#flt').value,v=$('#fv').value,w=$('#fw').value;
+  return sorted().filter(c=>(!f||c.tag===f)&&(!v||(v==='none'?!c.verdict:c.verdict===v))&&(!w||c.who===w||(c.who==='שניהם'&&w!=='')))}
 function drawList(){
-  const f=$('#flt').value;const cl=P.clips.filter(c=>!f||c.tag===f);$('#cnt').textContent=P.clips.length;
-  $('#list').innerHTML=cl.map((c,n)=>`<div class="clip ${c.id===cur?'on':''}" onclick="playClip('${c.id}')">
-   <div class="top"><button class="btn sm" style="padding:6px 12px;font-size:15px" title="הפעל קליפ" onclick="event.stopPropagation();playClip('${c.id}')">▶︎</button><span class="dot" style="background:${c.color}"></span><span class="nm">${n+1}. ${esc(c.tag)}</span><span class="tm">${fmt(c.start)}–${fmt(c.end)} (${Math.round(c.end-c.start)} שנ׳)</span></div>
-   <input placeholder="הערה (למשל: מס׳ 7 לבן, החלטה נכונה)" value="${esc(c.note)}" onclick="event.stopPropagation()" oninput="clip('${c.id}').note=this.value;save()">
-   <div class="act" onclick="event.stopPropagation()">
-    <span class="muted">מ־</span><input value="${fmt(c.start)}" onchange="setT('${c.id}','start',this.value)">
-    <span class="muted">עד</span><input value="${fmt(c.end)}" onchange="setT('${c.id}','end',this.value)">
-    <button class="btn s sm" title="קבע התחלה לזמן הנוכחי" onclick="setNow('${c.id}','start')">⇤ עכשיו</button>
-    <button class="btn s sm" title="קבע סוף לזמן הנוכחי" onclick="setNow('${c.id}','end')">עכשיו ⇥</button>
-    <select style="padding:3px;font-size:12px" onchange="retag('${c.id}',this.value)">${P.tags.map(t=>`<option ${t.name===c.tag?'selected':''}>${esc(t.name)}</option>`).join('')}</select>
-    ${player.kind==='file'?`<button class="btn s sm" onclick="recordClip('${c.id}')">💾 שמור קובץ</button>`:''}
-    <button class="btn bad sm" onclick="delClip('${c.id}')">🗑</button>
-   </div></div>`).join('')||'<div class="muted" style="padding:20px;text-align:center">עדיין אין קליפים.<br>לחץ על תגית תוך כדי צפייה.</div>';
+  const cl=filtered();$('#cnt').textContent=cl.length+(cl.length!==P.clips.length?'/'+P.clips.length:'');
+  $('#list').innerHTML=cl.map((c,n)=>`<div class="clip ${c.id===cur?'on':''}" id="c-${c.id}">
+   <div class="top"><button class="play" title="הפעל" onclick="playClip('${c.id}')">▶︎</button><span class="dot" style="background:${c.color}"></span>
+    <span class="nm">${esc(c.tag)}${c.ann?' ✏️':''}</span><span class="tm">דקה ${fmt(c.mark)} · ${Math.round(c.end-c.start)} שנ׳</span>
+    <button class="btn s sm ic ed" title="עריכה" onclick="this.closest('.clip').classList.toggle('open')">⋯</button></div>
+   <div class="vd">${RO?(c.verdict?`<button class="${c.verdict} on">${VD[c.verdict]}</button>`:'')+(c.who?`<span class="mu">· ${esc(crewName(c.who))}</span>`:''):
+     Object.keys(VD).map(k=>`<button class="${k} ${c.verdict===k?'on':''}" onclick="setV('${c.id}','${k}')">${VD[k]}</button>`).join('')+
+     `<select onchange="clip('${c.id}').who=this.value;save()"><option value="">מי שפט?</option>${CREW[P.sport].map(r=>`<option value="${esc(r)}" ${c.who===r?'selected':''}>${esc(crewName(r))}</option>`).join('')}</select>`}</div>
+   ${RO?(c.note?`<div style="margin-top:7px;font-size:13.5px;white-space:pre-wrap">${esc(c.note)}</div>`:''):`<textarea rows="1" placeholder="הערה מקצועית (מיקום, קריטריון, מה היה נכון)" oninput="clip('${c.id}').note=this.value;save()">${esc(c.note)}</textarea>`}
+   <div class="more ed">
+    <span class="mu">מ־</span><input value="${fmt(c.start)}" onchange="setT('${c.id}','start',this.value)">
+    <span class="mu">עד</span><input value="${fmt(c.end)}" onchange="setT('${c.id}','end',this.value)">
+    <button class="btn s sm" onclick="setNow('${c.id}','start')">⇤ עכשיו</button><button class="btn s sm" onclick="setNow('${c.id}','end')">עכשיו ⇥</button>
+    <select style="padding:3px;font-size:12px" onchange="retag('${c.id}',this.value)">${tags().map(t=>`<option ${t.name===c.tag?'selected':''}>${esc(t.name)}</option>`).join('')}</select>
+    ${player.kind==='file'?`<button class="btn s sm" onclick="exportClips(['${c.id}'],false)">💾 MP4</button>`:''}
+    ${c.ann?`<button class="btn s sm" onclick="clip('${c.id}').ann=null;save();drawList();renderOverlay()">מחק ציור</button>`:''}
+    <button class="btn bad sm" onclick="delClip('${c.id}')">🗑 מחק</button>
+   </div></div>`).join('')||`<div class="mu" style="padding:24px;text-align:center;line-height:1.9">${P.clips.length?'אין קליפים שמתאימים לסינון.':'עדיין אין קליפים.<br>לחץ על כפתור אירוע תוך כדי צפייה.'}</div>`;
   drawTL();
 }
-const clip=id=>P.clips.find(c=>c.id===id);
+function setV(id,k){const c=clip(id);c.verdict=c.verdict===k?'':k;save();drawList()}
 function setT(id,k,v){const t=parseT(v);if(t==null)return toast('פורמט זמן: דק:שנ');clip(id)[k]=t;fix(id)}
 function setNow(id,k){if(!player.kind)return;clip(id)[k]=player.time();fix(id)}
-function fix(id){const c=clip(id);if(c.end<=c.start)c.end=c.start+1;P.clips.sort((a,b)=>a.start-b.start);save();drawList()}
-function retag(id,name){const t=P.tags.find(x=>x.name===name);Object.assign(clip(id),{tag:t.name,color:t.color});save();drawList()}
-function delClip(id){P.clips=P.clips.filter(c=>c.id!==id);save();drawList()}
+function fix(id){const c=clip(id);if(c.end<=c.start)c.end=c.start+1;save();drawList()}
+function retag(id,name){const t=tags().find(x=>x.name===name);Object.assign(clip(id),{tag:t.name,color:t.color});save();drawTags();drawList()}
+function delClip(id){P.clips=P.clips.filter(c=>c.id!==id);if(cur===id)cur=null;save();drawTags();drawList();renderOverlay()}
+
+// ================= Playback engine =================
 let stopAt=null,reel=null;
 function showStage(){const st=$('#stage');const r=st.getBoundingClientRect();if(r.top<0||r.bottom>innerHeight)st.scrollIntoView({behavior:'smooth',block:'start'})}
-function playClip(id){const c=clip(id);if(!c)return;if(!player.kind)return toast('טען קודם את הסרטון');cur=id;reel=null;stopAt=c.end;showStage();player.seek(c.start);player.play();
-  setTimeout(()=>{if(player.kind&&!player.playing()){player.seek(c.start);player.play()}},700);drawList()}
-function playReel(){const f=$('#flt').value;const cl=P.clips.filter(c=>!f||c.tag===f);if(!cl.length||!player.kind)return;reel={list:cl.map(c=>c.id),i:0};go()}
-function go(){const c=clip(reel.list[reel.i]);cur=c.id;stopAt=c.end;showStage();player.seek(c.start);player.play();drawList()}
-function stopReel(){reel=null;stopAt=null;player.kind&&player.pause()}
+function startClip(c){cur=c.id;stopAt=c.end;freeze=null;shownAnn=null;c._frozen=false;showStage();player.seek(c.start);player.play();
+  setTimeout(()=>{if(player.kind&&!player.playing()&&!freeze&&cur===c.id&&stopAt!=null){player.seek(c.start);player.play()}},800);
+  badge(`${c.tag} · דקה ${fmt(c.mark)}${c.verdict?' · '+VD[c.verdict]:''}`);drawList();
+  const el=document.getElementById('c-'+c.id);if(el&&innerWidth>960)el.scrollIntoView({block:'nearest'})}
+function playClip(id){const c=clip(id);if(!c)return;if(!player.kind)return toast('טען קודם את הסרטון');if(drawOn)toggleDraw();reel=null;startClip(c)}
+function playReel(){const cl=filtered();if(!cl.length||!player.kind)return toast(player.kind?'אין קליפים':'טען קודם סרטון');if(drawOn)toggleDraw();reel={list:cl.map(c=>c.id),i:0};startClip(clip(reel.list[0]))}
+function stopReel(){reel=null;stopAt=null;freeze=null;shownAnn=null;badge('');player.kind&&player.pause();renderOverlay()}
+function endFreeze(resume){if(!freeze)return;clearTimeout(freeze.to);freeze=null;shownAnn=null;renderOverlay();if(resume)player.play()}
+let badgeTo;function badge(t){const b=$('#badge');b.textContent=t;b.classList.toggle('show',!!t);clearTimeout(badgeTo);if(t)badgeTo=setTimeout(()=>b.classList.remove('show'),3500)}
 setInterval(()=>{
   if(!player.kind)return;const t=player.time();$('#tnow').textContent=fmt(t);
   const b=document.querySelector('#tl b');const d=player.dur();if(b&&d)b.style.right=(t/d*100)+'%';
-  if(stopAt!=null&&t>=stopAt){
-    if(reel&&reel.i<reel.list.length-1){reel.i++;go()}else{stopAt=null;reel=null;player.pause()}
-  }
-},150);
+  if(stopAt!=null&&!freeze&&cur){const c=clip(cur);
+    if(c&&c.ann&&c.ann.shapes.length&&!c._frozen&&t>=c.ann.t-0.05&&t<c.ann.t+1.5){c._frozen=true;player.pause();player.seek(c.ann.t);shownAnn=c.ann;renderOverlay();
+      freeze={to:setTimeout(()=>{freeze=null;shownAnn=null;renderOverlay();player.play()},3000)}}
+    else if(t>=stopAt){if(reel&&reel.i<reel.list.length-1){reel.i++;startClip(clip(reel.list[reel.i]))}else{stopAt=null;reel=null;player.pause()}}}
+},100);
 function drawTL(){const d=player.dur()||Math.max(60,...P.clips.map(c=>c.end));
-  $('#tl').innerHTML=P.clips.map(c=>`<i style="right:${c.start/d*100}%;width:${Math.max(.3,(c.end-c.start)/d*100)}%;background:${c.color}"></i>`).join('')+'<b></b>'}
+  $('#tl').innerHTML=P.clips.map(c=>`<i title="${esc(c.tag)}" style="right:${c.start/d*100}%;width:${Math.max(.35,(c.end-c.start)/d*100)}%;background:${c.color}"></i>`).join('')+'<b></b>'}
 function tlClick(e){const r=e.currentTarget.getBoundingClientRect();const d=player.dur();if(d)player.seek((r.right-e.clientX)/r.width*d)}
 
-// ===== Real clip files (local video only) =====
-async function recordClip(id,silent){
-  const c=clip(id),v=player.v;if(!v||!v.captureStream)return toast('הדפדפן לא תומך – השתמש ב-Chrome');
-  toast('מקליט קליפ… ('+Math.round(c.end-c.start)+' שנ׳)');
-  v.pause();v.playbackRate=1;v.currentTime=c.start;await new Promise(r=>v.addEventListener('seeked',r,{once:true}));
-  const rec=new MediaRecorder(v.captureStream(),{mimeType:MediaRecorder.isTypeSupported('video/webm;codecs=vp9')?'video/webm;codecs=vp9':'video/webm'});
-  const ch=[];rec.ondataavailable=e=>e.data.size&&ch.push(e.data);
-  const done=new Promise(r=>rec.onstop=r);rec.start();stopAt=null;reel=null;await v.play();
-  await new Promise(r=>{const h=()=>{if(v.currentTime>=c.end){v.removeEventListener('timeupdate',h);r()}};v.addEventListener('timeupdate',h)});
-  v.pause();rec.stop();await done;
-  const n=P.clips.indexOf(c)+1;dl(new Blob(ch,{type:'video/webm'}),`${(P.name||'משחק')} - ${String(n).padStart(2,'0')} ${c.tag} ${fmt(c.mark).replace(/:/g,'-')}.webm`);
-  $('#rate').value=1;
+// ================= High-quality export (local file) =================
+function recMime(){const c=['video/mp4;codecs=avc1.640028,mp4a.40.2','video/mp4;codecs=avc1,mp4a.40.2','video/mp4;codecs=avc1.640028,opus','video/mp4;codecs=avc1,opus','video/webm;codecs=vp9,opus','video/mp4','video/webm'];return c.find(m=>window.MediaRecorder&&MediaRecorder.isTypeSupported(m))||'video/webm'}
+function waitSeek(v,t){return new Promise(r=>{v.addEventListener('seeked',r,{once:true});v.currentTime=t})}
+let cancelExp=false;
+async function exportClips(ids,merge){
+  const v=player.v;if(!v)return toast('ייצוא וידאו זמין לקובץ וידאו מהמכשיר');if(!v.videoWidth)return toast('הסרטון עוד נטען');
+  const list=ids.map(clip).filter(Boolean).sort((a,b)=>a.start-b.start);if(!list.length)return toast('אין קליפים');
+  closeM();if(drawOn)toggleDraw();stopReel();cancelExp=false;
+  const W=v.videoWidth,H=v.videoHeight;const cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');
+  const mime=recMime(),ext=mime.includes('mp4')?'mp4':'webm';
+  const total=list.reduce((s,c)=>s+(c.end-c.start)+(c.ann&&c.ann.shapes.length?3:0)+(merge?2:0),0);let done=0;
+  const pw=document.createElement('div');pw.className='prog';pw.innerHTML=`<div class="box"><h3>מייצא ${merge?'סרטון תקציר':list.length+' קליפים'} (${ext.toUpperCase()})</h3><div class="mu" id="pt">מכין…</div><div class="pbar"><i id="pb"></i></div><div class="mu">ההקלטה רצה בזמן אמת – אל תסגור את המסך.</div><p><button class="btn bad sm" onclick="cancelExp=true">ביטול</button></p></div>`;document.body.appendChild(pw);
+  const prog=t=>{$('#pt').textContent=t;$('#pb').style.width=Math.min(100,done/total*100)+'%'};
+  let at=[];
+  if(v.captureStream){at=v.captureStream().getAudioTracks()}
+  else{try{if(!v._ac){const ac=new (window.AudioContext||window.webkitAudioContext)();const src=ac.createMediaElementSource(v);const dst=ac.createMediaStreamDestination();src.connect(dst);src.connect(ac.destination);v._ac={ac,dst}}
+    await v._ac.ac.resume();at=v._ac.dst.stream.getAudioTracks()}catch(e){}}
+  // keep a continuous audio track (silence between clips / on title cards) so the recorder never drops frames
+  let mixAc=null;
+  try{mixAc=new (window.AudioContext||window.webkitAudioContext)();const dst=mixAc.createMediaStreamDestination();
+    const osc=mixAc.createOscillator(),g=mixAc.createGain();g.gain.value=0;osc.connect(g).connect(dst);osc.start();
+    if(at.length)mixAc.createMediaStreamSource(new MediaStream(at)).connect(dst);
+    await mixAc.resume();at=dst.stream.getAudioTracks()}catch(e){}
+  let mode='play',curC=null,titleUntil=0,frozenAnn=null,card=null;
+  const font=Math.round(H*0.045);
+  function paint(){
+    if(card){x.fillStyle='#0b111c';x.fillRect(0,0,W,H);x.fillStyle=card.color;x.fillRect(0,H*0.62,W,H*0.012);x.direction='rtl';x.textAlign='center';x.fillStyle='#fff';
+      x.font=`800 ${font*2}px Heebo,Arial`;x.fillText(card.title,W/2,H*0.45);x.font=`500 ${font}px Heebo,Arial`;x.fillStyle='#a9b4cc';x.fillText(card.sub,W/2,H*0.56);
+      x.font=`700 ${font*0.7}px Heebo,Arial`;x.fillStyle='#3ecfb2';x.fillText('Reflect Clips',W/2,H*0.9);return}
+    x.drawImage(v,0,0,W,H);
+    if(frozenAnn)drawShapes(x,frozenAnn.shapes,W,H);
+    if(curC&&performance.now()<titleUntil){const h=font*2.1;x.fillStyle='rgba(8,12,20,.78)';x.fillRect(0,H-h-H*0.05,W,h);x.fillStyle=curC.color;x.fillRect(W-W*0.012,H-h-H*0.05,W*0.012,h);
+      x.direction='rtl';x.textAlign='right';x.fillStyle='#fff';x.font=`800 ${font}px Heebo,Arial`;
+      x.fillText(`${curC.tag}  ·  דקה ${fmt(curC.mark)}${curC.verdict?'  ·  '+VD[curC.verdict]:''}`,W-W*0.03,H-H*0.05-h*0.35)}
+    x.direction='ltr';x.textAlign='left';x.font=`700 ${font*0.55}px Heebo,Arial`;x.fillStyle='rgba(255,255,255,.55)';x.fillText('Reflect',W*0.015,H*0.05);
+  }
+  let raf;const loop=()=>{paint();raf=requestAnimationFrame(loop)};
+  const cs=cv.captureStream(30);const stream=new MediaStream([...cs.getVideoTracks(),...at]);
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+  const warm=rec=>Promise.race([new Promise(r=>rec.addEventListener('dataavailable',r,{once:true})),sleep(3000)]).then(()=>sleep(300));
+  async function recordList(items,name){
+    const ch=[];const rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:Math.min(16e6,Math.max(6e6,W*H*6)),audioBitsPerSecond:192000});
+    rec.ondataavailable=e=>e.data.size&&ch.push(e.data);const stopped=new Promise(r=>rec.onstop=r);
+    v.pause();v.playbackRate=1;v.muted=false;let started=false;
+    for(const c of items){if(cancelExp)break;
+      await waitSeek(v,c.start);curC=c;
+      if(merge){card={title:c.tag,sub:`דקה ${fmt(c.mark)}${c.verdict?'  ·  '+VD[c.verdict]:''}${c.who?'  ·  '+crewName(c.who):''}`,color:c.color};paint();
+        if(!started){rec.start(250);started=true}else rec.resume();prog(`${c.tag} · דקה ${fmt(c.mark)}`);await sleep(2000);done+=2;rec.pause();card=null}
+      c._fz=false;const t0=v.currentTime;await v.play();await new Promise(r=>{const st=performance.now();const ck=()=>{if(v.currentTime>t0+0.03||performance.now()-st>3000)r();else requestAnimationFrame(ck)};ck()});titleUntil=performance.now()+3000;
+      if(!started){rec.start(250);started=true}else rec.resume();
+      await new Promise(res=>{const h=()=>{if(cancelExp){v.removeEventListener('timeupdate',h);return res()}
+          prog(`${c.tag} · ${fmt(v.currentTime)} / ${fmt(c.end)}`);
+          if(c.ann&&c.ann.shapes.length&&!c._fz&&v.currentTime>=c.ann.t){c._fz=true;v.pause();frozenAnn=c.ann;setTimeout(()=>{frozenAnn=null;done+=3;v.play()},3000)}
+          if(v.currentTime>=c.end){v.removeEventListener('timeupdate',h);res()}};v.addEventListener('timeupdate',h)});
+      v.pause();done+=c.end-c.start;rec.pause();
+    }
+    rec.stop();await stopped;
+    if(!cancelExp)dl(new Blob(ch,{type:mime.split(';')[0]}),name+'.'+ext);
+  }
+  loop();
+  try{
+    if(merge)await recordList(list,safe(`${P.name||'משחק'} - תקציר`));
+    else for(const c of list){if(cancelExp)break;const n=sorted().indexOf(c)+1;await recordList([c],safe(`${P.name||'משחק'} - ${String(n).padStart(2,'0')} ${c.tag} דקה ${fmt(c.mark).replace(/:/g,'-')}`));await sleep(400)}
+  }catch(e){toast('שגיאה בייצוא: '+e.message,4000)}
+  cancelAnimationFrame(raf);try{mixAc&&mixAc.close()}catch(e){}pw.remove();toast(cancelExp?'הייצוא בוטל':'הייצוא הסתיים ✓',2500);
 }
-async function recordAll(){const f=$('#flt').value;for(const c of P.clips.filter(c=>!f||c.tag===f))await recordClip(c.id);toast('כל הקליפים נשמרו')}
 
-// ===== Export / import =====
-function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)}
-function linksText(){const id=P.src&&P.src.type==='yt'?P.src.id:null;const f=$('#flt').value;
-  return P.clips.filter(c=>!f||c.tag===f).map(c=>`${c.tag} – דקה ${fmt(c.mark)}\n${id?'https://www.youtube.com/embed/'+id+'?start='+Math.floor(c.start)+'&end='+Math.ceil(c.end)+'&autoplay=1':(P.src?P.src.name:'')}`).join('\n\n')}
-function copyLinks(){if(!P.clips.length)return toast('אין קליפים');const t=linksText();
-  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('הקישורים הועתקו – הדבק בוואטסאפ')).catch(()=>modal(`<h3 style="margin-top:0">קישורים</h3><p class="muted">סמן הכל והעתק:</p><textarea style="width:100%;height:260px;background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px" readonly onclick="this.select()">${esc(t)}</textarea><p><button class="btn s" onclick="closeM()">סגירה</button></p>`))}
+// ================= Links / share / report =================
+function ytLink(c){return 'https://www.youtube.com/embed/'+P.src.id+'?start='+Math.floor(c.start)+'&end='+Math.ceil(c.end)+'&autoplay=1'}
+function linksText(){const yt=P.src&&P.src.type==='yt';
+  return filtered().map(c=>`${c.tag} – דקה ${fmt(c.mark)}\n${yt?ytLink(c):(P.src?P.src.name:'')}`).join('\n\n')}
+function copyLinks(){if(!filtered().length)return toast('אין קליפים');copyText(linksText(),'הקישורים הועתקו – הדבק בוואטסאפ')}
+async function pack(obj){const s=new Blob([JSON.stringify(obj)]).stream().pipeThrough(new CompressionStream('deflate-raw'));const buf=new Uint8Array(await new Response(s).arrayBuffer());
+  let bin='';buf.forEach(b=>bin+=String.fromCharCode(b));return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+async function unpack(str){const bin=atob(str.replace(/-/g,'+').replace(/_/g,'/'));const buf=Uint8Array.from(bin,c=>c.charCodeAt(0));
+  const s=new Blob([buf]).stream().pipeThrough(new DecompressionStream('deflate-raw'));return JSON.parse(await new Response(s).text())}
+const rnd=n=>Math.round(n*10)/10;
+async function shareURL(who){
+  const cl=sorted().filter(c=>!who||c.who===who||c.who==='שניהם');
+  const o={n:P.name,d:P.date,m:P.comp,s:P.sport,y:P.src&&P.src.type==='yt'?P.src.id:'',w:P.crew,f:who||'',
+    c:cl.map(c=>[c.tag,c.color,rnd(c.start),rnd(c.end),rnd(c.mark),c.verdict||'',c.who||'',c.note||'',c.ann?{t:rnd(c.ann.t),s:c.ann.shapes.map(s=>({t:s.t,c:s.c,p:(s.t==='free'?s.p.filter((_,i)=>i%2===0||i===s.p.length-1):s.p).map(q=>[Math.round(q.x*1000),Math.round(q.y*1000)])}))}:0])};
+  return location.origin+location.pathname+'#v='+(await pack(o));
+}
+function openShare(){
+  if(!P.clips.length)return toast('אין קליפים לשתף');
+  const yt=P.src&&P.src.type==='yt';
+  const people=CREW[P.sport].filter(r=>r!=='שניהם');
+  modal(`<h3>🔗 שיתוף עם שופטים</h3>
+  ${yt?'':'<p style="color:var(--mid)">⚠️ הקישור עובד רק למשחק שנטען מיוטיוב. למשחק מקובץ – ייצא קליפים כ-MP4 ושלח אותם.</p>'}
+  <p class="mu">כל קישור פותח דף צפייה (בלי אפשרות עריכה) עם הקליפים, ההחלטות, ההערות והציורים. אפשר לשלוח בוואטסאפ.</p>
+  <div style="display:flex;flex-direction:column;gap:8px">
+   <button class="btn" onclick="doShare('')">📋 העתק קישור לכל הקליפים</button>
+   ${people.map(r=>`<button class="btn s" onclick="doShare('${esc(r)}')">📋 קישור אישי ל${esc(crewName(r))}</button>`).join('')}
+  </div><p><button class="btn s" onclick="closeM()">סגירה</button></p>`);
+}
+async function doShare(who){try{const u=await shareURL(who);const n=sorted().filter(c=>!who||c.who===who||c.who==='שניהם').length;
+  copyText(`${P.name||'ניתוח משחק'}${who?' – '+crewName(who):''}\n${n} קליפים לצפייה:\n${u}`,'הקישור הועתק – הדבק בוואטסאפ')}catch(e){toast('הדפדפן לא תומך ביצירת קישור')}}
+function stats(list){const by={};list.forEach(c=>{const k=c.tag;by[k]=by[k]||{n:0,ok:0,bad:0,mid:0,color:c.color};by[k].n++;if(c.verdict)by[k][c.verdict]++});
+  const v={ok:0,bad:0,mid:0};list.forEach(c=>c.verdict&&v[c.verdict]++);const graded=v.ok+v.bad+v.mid;return {by,v,graded,acc:graded?Math.round(v.ok/graded*100):null}}
+function reportHTML(list){const s=stats(list);
+  return `<div class="kpis"><div class="kpi"><b>${list.length}</b><span>קליפים</span></div><div class="kpi"><b style="color:var(--ok)">${s.acc==null?'—':s.acc+'%'}</b><span>החלטות נכונות</span></div>
+  <div class="kpi"><b style="color:var(--ok)">${s.v.ok}</b><span>נכון</span></div><div class="kpi"><b style="color:var(--bad)">${s.v.bad}</b><span>שגוי</span></div><div class="kpi"><b style="color:var(--mid)">${s.v.mid}</b><span>גבולי</span></div></div>
+  <table><tr><th>אירוע</th><th>כמות</th><th>נכון</th><th>שגוי</th><th>גבולי</th><th style="width:30%"></th></tr>
+  ${Object.entries(s.by).map(([k,o])=>`<tr><td><span class="dot" style="display:inline-block;background:${o.color};margin-left:6px"></span>${esc(k)}</td><td>${o.n}</td><td>${o.ok}</td><td>${o.bad}</td><td>${o.mid}</td>
+  <td><div class="meter"><i style="width:${o.ok/o.n*100}%;background:var(--ok)"></i><i style="width:${o.bad/o.n*100}%;background:var(--bad)"></i><i style="width:${o.mid/o.n*100}%;background:var(--mid)"></i></div></td></tr>`).join('')}</table>`}
+function reportText(){const cl=sorted(),s=stats(cl);
+  let t=`📊 ${P.name||'ניתוח משחק'}${P.date?' · '+P.date:''}${P.comp?' · '+P.comp:''}\n`;
+  const crew=CREW[P.sport].filter(r=>P.crew[r]).map(r=>`${r}: ${P.crew[r]}`).join(' | ');if(crew)t+=crew+'\n';
+  t+=`\nקליפים: ${cl.length} | נכון: ${s.v.ok} | שגוי: ${s.v.bad} | גבולי: ${s.v.mid}${s.acc!=null?' | דיוק: '+s.acc+'%':''}\n`;
+  t+=Object.entries(s.by).map(([k,o])=>`• ${k}: ${o.n} (✔${o.ok} ✖${o.bad} ?${o.mid})`).join('\n');
+  t+='\n\n'+cl.map((c,i)=>`${i+1}. ${c.tag} – דקה ${fmt(c.mark)}${c.verdict?' – '+VD[c.verdict]:''}${c.who?' – '+c.who:''}${c.note?'\n   '+c.note:''}`).join('\n');return t}
+function openReport(){
+  const people=CREW[P.sport].filter(r=>r!=='שניהם'&&P.clips.some(c=>c.who===r||c.who==='שניהם'));
+  modal(`<h3>📊 דוח משחק</h3><div class="mu">${esc(P.name||'')}${P.date?' · '+esc(P.date):''}${P.comp?' · '+esc(P.comp):''}</div>
+  ${reportHTML(sorted())}
+  ${people.map(r=>{const l=sorted().filter(c=>c.who===r||c.who==='שניהם');const s=stats(l);return `<div style="margin-top:12px"><b>${esc(crewName(r))}</b> <span class="mu">· ${l.length} קליפים · דיוק ${s.acc==null?'—':s.acc+'%'}</span></div>`}).join('')}
+  <p class="ed"><button class="btn" onclick="copyText(reportText(),'הדוח הועתק')">📋 העתק דוח כטקסט</button> <button class="btn s" onclick="closeM()">סגירה</button></p><p class="rohead"><button class="btn s" onclick="closeM()">סגירה</button></p>`);
+}
+
+// ================= Export menu / project =================
 function exportMenu(){
-  modal(`<h3 style="margin-top:0">ייצוא</h3>
-  <p><button class="btn" onclick="dl(new Blob([JSON.stringify(P,null,1)],{type:'application/json'}),(P.name||'פרויקט')+'.json')">💾 שמירת פרויקט (JSON)</button> <span class="muted">לפתיחה מחדש מאוחר יותר</span></p>
-  <p><button class="btn s" onclick="dl(new Blob(['\\ufeff'+'מס,תגית,התחלה,סוף,משך,הערה\\n'+P.clips.map((c,i)=>[i+1,c.tag,fmt(c.start),fmt(c.end),Math.round(c.end-c.start),'\\u0022'+(c.note||'').replace(/\\u0022/g,'')+'\\u0022'].join(',')).join('\\n')],{type:'text/csv'}),(P.name||'קליפים')+'.csv')">📊 טבלה לאקסל (CSV)</button></p>
-  <p><button class="btn s" onclick="navigator.clipboard.writeText(linksText()).then(()=>toast('הועתק'))">📋 העתקת רשימת קליפים + קישורים</button> <span class="muted">להדבקה בוואטסאפ / מייל – כל קישור מנגן רק את הקטע</span></p>
-  ${player.kind==='file'?`<p><button class="btn s" onclick="closeM();recordAll()">🎬 שמירת כל הקליפים כקבצי וידאו</button> <span class="muted">לפי הסינון הנוכחי · ההקלטה בזמן אמת</span></p>`:'<p class="muted">שמירת קליפים כקבצי וידאו אפשרית כשעובדים עם קובץ וידאו מהמחשב. ביוטיוב – הקליפים נשמרים כקישורים.</p>'}
-  <textarea style="width:100%;height:150px;background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px" readonly>${esc(linksText())}</textarea>
+  const file=player.kind==='file';const cl=filtered();
+  modal(`<h3>🎬 ייצוא</h3>
+  ${file?`<p><button class="btn" onclick="exportClips(filtered().map(c=>c.id),true)">🎞 סרטון תקציר אחד (${cl.length} קליפים)</button><br><span class="mu">כרטיס כותרת לפני כל אירוע, כותרת על המסך, ציורים קפואים, באיכות המקור.</span></p>
+  <p><button class="btn s" onclick="exportClips(filtered().map(c=>c.id),false)">💾 כל קליפ כקובץ נפרד (${cl.length})</button><br><span class="mu">שם הקובץ: משחק – מספר – אירוע – דקה.</span></p>
+  <p class="mu">פורמט: <b>${recMime().includes('mp4')?'MP4':'WebM'}</b> · לפי הסינון הנוכחי · ההקלטה בזמן אמת.</p>`
+  :`<p class="mu">ייצוא קבצי וידאו (MP4) זמין כשטוענים <b>קובץ וידאו</b> מהמכשיר. במשחק מיוטיוב – שתף קישור (🔗) או העתק קישורים (📋).</p>`}
+  <hr style="border-color:var(--ln)">
+  <p><button class="btn s" onclick="dl(new Blob([JSON.stringify(P,null,1)],{type:'application/json'}),safe(P.name||'פרויקט')+'.json')">💾 שמירת פרויקט (JSON)</button> <span class="mu">לגיבוי, לפתיחה במכשיר אחר, או לשליחה ל-Claude לחיתוך באיכות מקסימלית</span></p>
+  <p><button class="btn s" onclick="dl(new Blob(['\\ufeff'+'מס,אירוע,דקה,התחלה,סוף,החלטה,שופט,הערה\\n'+sorted().map((c,i)=>[i+1,c.tag,fmt(c.mark),fmt(c.start),fmt(c.end),c.verdict?VD[c.verdict]:'',c.who,'\\u0022'+(c.note||'').replace(/\\u0022/g,'')+'\\u0022'].join(',')).join('\\n')],{type:'text/csv'}),safe(P.name||'קליפים')+'.csv')">📊 טבלה לאקסל (CSV)</button></p>
   <p><button class="btn s" onclick="closeM()">סגירה</button></p>`);
 }
-function importJSON(f){if(!f)return;f.text().then(t=>{try{P=JSON.parse(t);if(!P.sets){P.sets={handball:P.tags||JSON.parse(JSON.stringify(DEF_TAGS)),football:JSON.parse(JSON.stringify(FOOT_TAGS))};P.sport='handball';P.tagsVer=TAGS_VER}P.tags=P.sets[P.sport];markSport();save();$('#pname').value=P.name||'';drawTags();drawList();
-  if(P.src&&P.src.type==='yt'){$('#url').value='https://youtu.be/'+P.src.id;loadYT()}else if(P.src)toast('בחר שוב את קובץ הווידאו: '+P.src.name);}catch(e){toast('קובץ לא תקין')}})}
+function importJSON(f){if(!f)return;f.text().then(t=>{try{P=migrate(JSON.parse(t));save();boot();
+  if(P.src&&P.src.type==='yt'){$('#url').value='https://youtu.be/'+P.src.id;loadYT(P.src.id)}else if(P.src)toast('בחר שוב את קובץ הווידאו: '+P.src.name,3500)}catch(e){toast('קובץ לא תקין')}})}
 
-// ===== Settings =====
+// ================= Settings / game info =================
+function setSport(sp){P.sport=sp;save();boot();toast(sp==='football'?'⚽ כדורגל':'🤾 כדוריד')}
+function openGame(){
+  modal(`<h3>📋 פרטי משחק</h3><div class="fg">
+   <div><label>שם המשחק</label><input value="${esc(P.name)}" oninput="P.name=this.value;save();drawHead()" placeholder="מכבי – הפועל"></div>
+   <div><label>תאריך</label><input type="date" value="${esc(P.date)}" onchange="P.date=this.value;save()"></div>
+   <div><label>מסגרת / ליגה</label><input value="${esc(P.comp)}" oninput="P.comp=this.value;save()" placeholder="ליגת העל"></div></div>
+   <h3 style="margin-top:16px">צוות שיפוט</h3><div class="fg">
+   ${CREW[P.sport].filter(r=>r!=='שניהם').map(r=>`<div><label>${esc(r)}</label><input value="${esc(P.crew[r]||'')}" oninput="P.crew['${esc(r)}']=this.value;save()"></div>`).join('')}</div>
+   <p><button class="btn" onclick="closeM();drawTags();drawList()">שמירה</button></p>`);
+}
 function openSettings(){
-  modal(`<h3 style="margin-top:0">הגדרת אירועים</h3><p class="muted">לכל אירוע: איך מזהים אותו, כמה שניות לפני ואחרי ייכנסו לקליפ, ואיזה מקש מפעיל אותו. ההגדרות האלה הן גם הבסיס לחיתוך האוטומטי.</p>
-  <table><tr><th>שם</th><th>צבע</th><th>מקש</th><th>שנ׳ לפני</th><th>שנ׳ אחרי</th><th></th></tr>
-  ${P.tags.map((t,i)=>`<tr><td><input value="${esc(t.name)}" onchange="P.tags[${i}].name=this.value"></td><td><input type="color" value="${t.color}" style="width:44px;padding:2px" onchange="P.tags[${i}].color=this.value"></td>
-  <td><input value="${esc(t.key)}" maxlength="1" style="width:44px" onchange="P.tags[${i}].key=this.value.toLowerCase()"></td>
-  <td><input type="number" min="0" value="${t.pre}" style="width:64px" onchange="P.tags[${i}].pre=+this.value"></td><td><input type="number" min="0" value="${t.post}" style="width:64px" onchange="P.tags[${i}].post=+this.value"></td>
-  <td><button class="btn bad sm" onclick="P.tags.splice(${i},1);openSettings()">✕</button></td></tr>
-  <tr><td colspan="6" style="padding-bottom:12px"><input placeholder="איך מזהים את האירוע (מה שומעים / רואים / מה קורה בלוח)" value="${esc(t.desc||'')}" onchange="P.tags[${i}].desc=this.value"></td></tr>`).join('')}</table>
-  <p><button class="btn s" onclick="P.tags.push({name:'תגית חדשה',color:'#888888',key:'',pre:8,post:3,desc:''});openSettings()">+ תגית</button>
-  <button class="btn s" onclick="P.tags=P.sets[P.sport]=JSON.parse(JSON.stringify(DEFS[P.sport]));openSettings()">ברירת מחדל (${P.sport==='football'?'כדורגל':'כדוריד'})</button></p>
+  const T=tags();
+  modal(`<h3>⚙️ אירועים – ${P.sport==='football'?'כדורגל':'כדוריד'}</h3><p class="mu">לכל אירוע: איך מזהים אותו, כמה שניות לפני ואחרי הלחיצה ייכנסו לקליפ, ואיזה מקש מפעיל אותו.</p>
+  <table><tr><th>שם</th><th>צבע</th><th>מקש</th><th>לפני</th><th>אחרי</th><th></th></tr>
+  ${T.map((t,i)=>`<tr><td><input value="${esc(t.name)}" onchange="tags()[${i}].name=this.value"></td><td><input type="color" value="${t.color}" style="width:44px;padding:2px" onchange="tags()[${i}].color=this.value"></td>
+  <td><input value="${esc(t.key)}" maxlength="1" style="width:44px" onchange="tags()[${i}].key=this.value.toLowerCase()"></td>
+  <td><input type="number" min="0" value="${t.pre}" style="width:62px" onchange="tags()[${i}].pre=+this.value"></td><td><input type="number" min="0" value="${t.post}" style="width:62px" onchange="tags()[${i}].post=+this.value"></td>
+  <td><button class="btn bad sm" onclick="tags().splice(${i},1);openSettings()">✕</button></td></tr>
+  <tr><td colspan="6" style="padding-bottom:12px"><input placeholder="איך מזהים (מה שומעים / רואים / מה קורה בלוח)" value="${esc(t.desc||'')}" onchange="tags()[${i}].desc=this.value"></td></tr>`).join('')}</table>
+  <p><button class="btn s" onclick="tags().push({name:'אירוע חדש',color:'#888888',key:'',pre:8,post:3,desc:''});openSettings()">+ אירוע</button>
+  <button class="btn s" onclick="P.sets[P.sport]=clone(DEFS[P.sport]);openSettings()">ברירת מחדל</button></p>
   <p><button class="btn" onclick="save();drawTags();drawList();closeM();toast('נשמר')">שמירה</button></p>`);
 }
-function modal(h){closeM();const m=document.createElement('div');m.className='modal';m.id='mdl';m.innerHTML=`<div class="box">${h}</div>`;m.onclick=e=>{if(e.target===m)closeM()};document.body.appendChild(m)}
-function closeM(){const m=$('#mdl');if(m)m.remove()}
+function drawHead(){$('#gname').textContent=P.name||'';['handball','football'].forEach(k=>{const b=document.getElementById('sw-'+k);if(b)b.className=P.sport===k?'on':''})}
 
-// ===== Keyboard =====
+// ================= Keyboard =================
+let inMark=null;
 document.addEventListener('keydown',e=>{
-  if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)||$('#mdl'))return;
-  const k=e.key.toLowerCase();
+  if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)||$('#mdl'))return;const k=e.key.toLowerCase();
   if(k===' '){e.preventDefault();togglePlay();return}
+  if(e.key==='ArrowLeft'){e.preventDefault();skip(-2);return}if(e.key==='ArrowRight'){e.preventDefault();skip(2);return}
+  if(k===','){frame(-1);return}if(k==='.'){frame(1);return}
   if(k==='+'||k==='='){zoomBy(0.5);return}if(k==='-'){zoomBy(-0.5);return}
-  if(e.key==='ArrowLeft'){e.preventDefault();skip(-2);return}
-  if(e.key==='ArrowRight'){e.preventDefault();skip(2);return}
+  if(RO)return;
+  if(k==='d'||k==='ג'){toggleDraw();return}
   if(k==='i'||k==='ן'){inMark=player.time();toast('התחלה: '+fmt(inMark));return}
-  if((k==='o'||k==='ם')&&inMark!=null){const o=player.time();if(o>inMark){addClip(-1,inMark,o)}inMark=null;return}
-  const i=P.tags.findIndex(t=>t.key&&t.key===k);if(i>=0){e.preventDefault();addClip(i)}
+  if((k==='o'||k==='ם')&&inMark!=null){const o=player.time();if(o>inMark)addClip(-1,inMark,o);inMark=null;return}
+  const i=tags().findIndex(t=>t.key&&t.key===k);if(i>=0){e.preventDefault();addClip(i)}
 });
 
-drawTags();drawList();
-if(P.src&&P.src.type==='yt'){$('#url').value='https://youtu.be/'+P.src.id;loadYT()}
+// ================= Boot =================
+function boot(){drawHead();drawTags();drawList();renderOverlay()}
+async function bootViewer(h){
+  try{const o=await unpack(h.slice(3));RO=true;document.body.classList.add('ro');$('#emptyMsg').innerHTML='<b>טוען את המשחק…</b>לחץ ▶︎ ליד קליפ כדי לצפות בו.';
+    P=blank();Object.assign(P,{name:o.n,date:o.d,comp:o.m,sport:o.s||'handball',crew:o.w||{},src:o.y?{type:'yt',id:o.y}:null,
+      clips:o.c.map(a=>({id:uid(),tag:a[0],color:a[1],start:a[2],end:a[3],mark:a[4],verdict:a[5],who:a[6],note:a[7],ann:a[8]?{t:a[8].t,shapes:a[8].s.map(s=>({t:s.t,c:s.c,p:s.p.map(q=>({x:q[0]/1000,y:q[1]/1000}))}))}:null}))});
+    $('#rohead').innerHTML=`<h3 style="margin:0">${esc(P.name||'ניתוח משחק')}${o.f?' – '+esc(crewName(o.f)):''}</h3><div class="mu">${esc(P.date||'')}${P.comp?' · '+esc(P.comp):''} · לחץ ▶︎ ליד קליפ, או "תקציר" לצפייה רציפה</div>${reportHTML(P.clips)}`;
+    boot();if(P.src)loadYT(P.src.id);
+  }catch(e){RO=false;document.body.classList.remove('ro');toast('קישור שיתוף לא תקין',3000);boot()}
+}
+if(location.hash.startsWith('#v='))bootViewer(location.hash);
+else{boot();if(P.src&&P.src.type==='yt'){$('#url').value='https://youtu.be/'+P.src.id;loadYT(P.src.id)}}
 </script>
 </body>
 </html>
