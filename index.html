@@ -47,7 +47,7 @@ input,select{background:var(--panel2);border:1px solid var(--line);border-radius
 .bar i{position:absolute;top:0;bottom:0;opacity:.85}.bar b{position:absolute;top:0;bottom:0;width:2px;background:#fff}
 .sw{display:flex;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}.sw button{flex:1;border:0;padding:12px;font-size:16px;font-weight:700;background:var(--panel);color:var(--muted);cursor:pointer}.sw button.on{background:var(--pri);color:#062a23}
 .muted{color:var(--muted);font-size:12px}
-@media(max-width:900px){.wrap{grid-template-columns:1fr;height:auto}.right{min-height:420px}}
+@media(max-width:900px){.wrap{grid-template-columns:1fr;height:auto}.stage{position:sticky;top:0;z-index:3;box-shadow:0 6px 16px #0008}.right{min-height:420px}}
 </style>
 </head>
 <body>
@@ -201,9 +201,11 @@ function fix(id){const c=clip(id);if(c.end<=c.start)c.end=c.start+1;P.clips.sort
 function retag(id,name){const t=P.tags.find(x=>x.name===name);Object.assign(clip(id),{tag:t.name,color:t.color});save();drawList()}
 function delClip(id){P.clips=P.clips.filter(c=>c.id!==id);save();drawList()}
 let stopAt=null,reel=null;
-function playClip(id){const c=clip(id);if(!c||!player.kind)return;cur=id;reel=null;stopAt=c.end;player.seek(c.start);player.play();drawList()}
+function showStage(){const st=$('#stage');const r=st.getBoundingClientRect();if(r.top<0||r.bottom>innerHeight)st.scrollIntoView({behavior:'smooth',block:'start'})}
+function playClip(id){const c=clip(id);if(!c)return;if(!player.kind)return toast('טען קודם את הסרטון');cur=id;reel=null;stopAt=c.end;showStage();player.seek(c.start);player.play();
+  setTimeout(()=>{if(player.kind&&!player.playing()){player.seek(c.start);player.play()}},700);drawList()}
 function playReel(){const f=$('#flt').value;const cl=P.clips.filter(c=>!f||c.tag===f);if(!cl.length||!player.kind)return;reel={list:cl.map(c=>c.id),i:0};go()}
-function go(){const c=clip(reel.list[reel.i]);cur=c.id;stopAt=c.end;player.seek(c.start);player.play();drawList()}
+function go(){const c=clip(reel.list[reel.i]);cur=c.id;stopAt=c.end;showStage();player.seek(c.start);player.play();drawList()}
 function stopReel(){reel=null;stopAt=null;player.kind&&player.pause()}
 setInterval(()=>{
   if(!player.kind)return;const t=player.time();$('#tnow').textContent=fmt(t);
