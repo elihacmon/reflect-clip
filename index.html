@@ -87,6 +87,7 @@ input,select{background:var(--panel2);border:1px solid var(--line);border-radius
     <div class="foot">
       <button class="btn" onclick="playReel()">▶︎ נגן תקציר</button>
       <button class="btn s" onclick="stopReel()">■ עצור</button>
+      <button class="btn" onclick="copyLinks()">📋 העתק קישורים</button>
       <button class="btn s" onclick="exportMenu()">⬇︎ ייצוא</button>
       <label class="btn s" style="cursor:pointer">⬆︎ פתיחת פרויקט<input type="file" accept=".json" hidden onchange="importJSON(this.files[0])"></label>
       <button class="btn s bad" onclick="if(window.confirm('למחוק את כל הקליפים?')){P.clips=[];save();drawList()}">ניקוי</button>
@@ -232,8 +233,10 @@ async function recordAll(){const f=$('#flt').value;for(const c of P.clips.filter
 
 // ===== Export / import =====
 function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)}
-function linksText(){const id=P.src&&P.src.type==='yt'?P.src.id:null;
-  return (P.name?P.name+'\n\n':'')+P.clips.map((c,i)=>`${i+1}. ${c.tag} | ${fmt(c.start)}–${fmt(c.end)}${c.note?' | '+c.note:''}${id?'\n   https://www.youtube.com/embed/'+id+'?start='+Math.floor(c.start)+'&end='+Math.ceil(c.end)+'&autoplay=1':''}`).join('\n')}
+function linksText(){const id=P.src&&P.src.type==='yt'?P.src.id:null;const f=$('#flt').value;
+  return P.clips.filter(c=>!f||c.tag===f).map(c=>`${c.tag} – דקה ${fmt(c.mark)}\n${id?'https://www.youtube.com/embed/'+id+'?start='+Math.floor(c.start)+'&end='+Math.ceil(c.end)+'&autoplay=1':(P.src?P.src.name:'')}`).join('\n\n')}
+function copyLinks(){if(!P.clips.length)return toast('אין קליפים');const t=linksText();
+  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('הקישורים הועתקו – הדבק בוואטסאפ')).catch(()=>modal(`<h3 style="margin-top:0">קישורים</h3><p class="muted">סמן הכל והעתק:</p><textarea style="width:100%;height:260px;background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px" readonly onclick="this.select()">${esc(t)}</textarea><p><button class="btn s" onclick="closeM()">סגירה</button></p>`))}
 function exportMenu(){
   modal(`<h3 style="margin-top:0">ייצוא</h3>
   <p><button class="btn" onclick="dl(new Blob([JSON.stringify(P,null,1)],{type:'application/json'}),(P.name||'פרויקט')+'.json')">💾 שמירת פרויקט (JSON)</button> <span class="muted">לפתיחה מחדש מאוחר יותר</span></p>
