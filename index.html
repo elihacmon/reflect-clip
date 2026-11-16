@@ -181,7 +181,7 @@ let inMark=null;
 function drawList(){
   const f=$('#flt').value;const cl=P.clips.filter(c=>!f||c.tag===f);$('#cnt').textContent=P.clips.length;
   $('#list').innerHTML=cl.map((c,n)=>`<div class="clip ${c.id===cur?'on':''}" onclick="playClip('${c.id}')">
-   <div class="top"><span class="dot" style="background:${c.color}"></span><span class="nm">${n+1}. ${esc(c.tag)}</span><span class="tm">${fmt(c.start)}–${fmt(c.end)} (${Math.round(c.end-c.start)} שנ׳)</span></div>
+   <div class="top"><button class="btn sm" style="padding:6px 12px;font-size:15px" title="הפעל קליפ" onclick="event.stopPropagation();playClip('${c.id}')">▶︎</button><span class="dot" style="background:${c.color}"></span><span class="nm">${n+1}. ${esc(c.tag)}</span><span class="tm">${fmt(c.start)}–${fmt(c.end)} (${Math.round(c.end-c.start)} שנ׳)</span></div>
    <input placeholder="הערה (למשל: מס׳ 7 לבן, החלטה נכונה)" value="${esc(c.note)}" onclick="event.stopPropagation()" oninput="clip('${c.id}').note=this.value;save()">
    <div class="act" onclick="event.stopPropagation()">
     <span class="muted">מ־</span><input value="${fmt(c.start)}" onchange="setT('${c.id}','start',this.value)">
